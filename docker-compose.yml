@@ -1,0 +1,40 @@
+services:
+    Web:
+        image: castella:web
+        container_name: Baby-Castella_Web
+        ports:
+            - "8800:80"
+        volumes:
+            - ./src:/var/app
+        networks:
+            net:
+                ipv4_address: 10.0.0.2
+
+    front:
+        image: castella:front
+        container_name: Baby-Castella_front
+        volumes:
+            - ./src:/var/app
+            - node_modules:/var/app/node_modules
+        stdin_open: true
+        command: npm run dev
+        networks:
+            net:
+                ipv4_address: 10.0.0.3
+
+networks:
+    net:
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+                - subnet: 10.0.0.0/24
+                  gateway: 10.0.0.1
+
+volumes:
+    node_modules:
+        driver: local
+        driver_opts:
+            type: none
+            device: ${PWD}/src/node_modules
+            o: bind
