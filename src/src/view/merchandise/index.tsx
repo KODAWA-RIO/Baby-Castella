@@ -3,11 +3,11 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import { Link } from 'react-router-dom';
 
 interface  Merchandise{
-    id: number;
-    merchandise_name: string;
-    merchandise_price: number;
-    stock: number;
-    merchandise_display: boolean;
+  id: number;
+  merchandise_name: string;
+  merchandise_price: number;
+  stock: number;
+  merchandise_display: boolean;
 }
   
 const merchandises: Merchandise[] = [
@@ -17,53 +17,55 @@ const merchandises: Merchandise[] = [
 ];
 
 const Merchandise_index: React.FC = () => {
-    return (
-        <Box sx={{ padding: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 2 }}>
-            <Button
-              variant="contained"
-              color="primary"
-              component={Link}
-              to="/merchandise/create"
-            >
-              登録
-            </Button>
-          </Box>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>ID</TableCell>
-                  <TableCell>商品名</TableCell>
-                  <TableCell>値段</TableCell>
-                  <TableCell>在庫</TableCell>
-                  <TableCell>表示</TableCell>
-                  <TableCell >操作</TableCell>
+  return (
+    <Box sx={{ padding: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 2, width: '100%', maxWidth: 800 }}>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell>商品名</TableCell>
+                <TableCell>値段</TableCell>
+                <TableCell>在庫</TableCell>
+                <TableCell>表示</TableCell>
+                <TableCell >操作</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {merchandises.map((merchandise) => (
+                <TableRow key={merchandise.id}>
+                  <TableCell>{merchandise.id}</TableCell>
+                  <TableCell>{merchandise.merchandise_name}</TableCell>
+                  <TableCell>{merchandise.merchandise_price}</TableCell>
+                  <TableCell>{merchandise.stock}</TableCell>
+                  <TableCell>{merchandise.merchandise_display ? '表示' : '非表示'}</TableCell>
+                  <TableCell >
+                      <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} component={Link} to="/merchandise/edit">
+                          編集
+                      </Button>
+                      <Button variant="contained" color="secondary" size="small">
+                          削除
+                      </Button>
+                  </TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {merchandises.map((merchandise) => (
-                  <TableRow key={merchandise.id}>
-                    <TableCell>{merchandise.id}</TableCell>
-                    <TableCell>{merchandise.merchandise_name}</TableCell>
-                    <TableCell>{merchandise.merchandise_price}</TableCell>
-                    <TableCell>{merchandise.stock}</TableCell>
-                    <TableCell>{merchandise.merchandise_display ? '表示' : '非表示'}</TableCell>
-                    <TableCell >
-                        <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} component={Link} to="/merchandise/edit">
-                            編集
-                        </Button>
-                        <Button variant="contained" color="secondary" size="small">
-                            削除
-                        </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
-      );
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 2 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          component={Link}
+          to="/merchandise/create"
+        >
+          登録
+        </Button>
+      </Box>
+    </Box>
+  );
 };
 
 export default Merchandise_index;

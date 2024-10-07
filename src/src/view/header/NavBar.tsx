@@ -48,6 +48,7 @@ const NavBar: React.FC = () => {
           <MenuItem onClick={handleMenuClose} component={Link} to="/merchandise">メニュー一覧</MenuItem>
           <MenuItem onClick={handleMenuClose} component={Link} to="/topping">トッピング一覧</MenuItem>
           <MenuItem onClick={handleMenuClose} component={Link} to="/sales">売り上げ</MenuItem>
+          <MenuItem onClick={handleMenuClose} >ログアウト</MenuItem>
         </Menu>
       </Toolbar>
     </AppBar>
