@@ -15,7 +15,7 @@ interface Topping {
 }
 
 const initialFlavors: Flavor[] = [
-  { name: 'プレーン', stock: 40, price: 100 },
+  { name: 'プレーン', stock: 1, price: 100 },
   { name: 'チョコレート', stock: 40, price: 120 },
   { name: '抹茶', stock: 40, price: 130 },
   { name: 'ストロベリー', stock: 40, price: 150 },
@@ -103,8 +103,8 @@ const Order_create_1: React.FC = () => {
     <Box sx={{ padding: 4 }}>
       <Typography variant="h6" gutterBottom>
         最大6個
+        合計金額: {calculateTotal()} 円
       </Typography>
-
       <Grid container spacing={2} justifyContent="center">
         {flavors.map((flavor, index) => (
           <Grid item xs={6} sm={4} key={flavor.name}>
@@ -170,9 +170,7 @@ const Order_create_1: React.FC = () => {
       </Box>
 
       <Box sx={{ textAlign: 'center', marginTop: 4 }}>
-        <Typography variant="h6" gutterBottom>
-          合計金額: {calculateTotal()} 円
-        </Typography>
+        
         <Button
           variant="contained"
           color="primary"

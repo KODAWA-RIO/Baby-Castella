@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Box, Button, Typography, TextField, Paper, List, ListItem, ListItemText } from '@mui/material';
+import { Box, Button, Typography, TextField, Paper, List, ListItem, ListItemText, Grid } from '@mui/material';
 
 const Order_create_2: React.FC = () => {
   const location = useLocation();
@@ -29,82 +29,88 @@ const Order_create_2: React.FC = () => {
   };
 
   return (
-    <Box sx={{ padding: 4, maxWidth: 600, margin: '0 auto' }}>
+    <Box sx={{ padding: 4, maxWidth: 800, margin: '0 auto' }}>
       <Paper sx={{ padding: 4 }}>
         {orderData ? (
-          <>
-            <Typography variant="h6" gutterBottom>
-              名前: {orderData.name}
-            </Typography>
+          <Grid container spacing={4}>
+            {/* 左側のコンテンツ */}
+            <Grid item xs={12} md={6}>
+              <Typography variant="h6" gutterBottom>
+                名前: {orderData.name}
+              </Typography>
 
-            <Typography variant="h6" gutterBottom>
-              選択された商品
-            </Typography>
-            <List>
-              {orderData.flavors
-                .filter((flavor: any) => flavor.quantity > 0)  // 数量が0でない商品をフィルタリング
-                .map((flavor: any, index: number) => (
-                  <ListItem key={index}>
-                    <ListItemText primary={`${flavor.name}: ${flavor.quantity}個 - ${flavor.price * flavor.quantity} 円`} />
-                  </ListItem>
-                ))}
-            </List>
-
-            {orderData.toppings.length > 0 && (
-              <>
-                <Typography variant="h6" gutterBottom>
-                  選択されたトッピング
-                </Typography>
-                <List>
-                  {orderData.toppings.map((topping: any, index: number) => (
+              <Typography variant="h6" gutterBottom>
+                選択された商品
+              </Typography>
+              <List>
+                {orderData.flavors
+                  .filter((flavor: any) => flavor.quantity > 0)  // 数量が0でない商品をフィルタリング
+                  .map((flavor: any, index: number) => (
                     <ListItem key={index}>
-                      <ListItemText primary={`${topping.name}: ${topping.price} 円`} />
+                      <ListItemText primary={`${flavor.name}: ${flavor.quantity}個 - ${flavor.price * flavor.quantity} 円`} />
                     </ListItem>
                   ))}
-                </List>
-              </>
-            )}
+              </List>
 
-            <Typography variant="h6" gutterBottom>
-              メモ
-            </Typography>
-            <Typography variant="body1" paragraph>
-              {orderData.memo || 'なし'}
-            </Typography>
+              {orderData.toppings.length > 0 && (
+                <>
+                  <Typography variant="h6" gutterBottom>
+                    選択されたトッピング
+                  </Typography>
+                  <List>
+                    {orderData.toppings.map((topping: any, index: number) => (
+                      <ListItem key={index}>
+                        <ListItemText primary={`${topping.name}: ${topping.price} 円`} />
+                      </ListItem>
+                    ))}
+                  </List>
+                </>
+              )}
+            </Grid>
 
-            <Typography variant="h6" gutterBottom>
-              合計金額: {orderData.total} 円
-            </Typography>
+            {/* 右側のコンテンツ */}
+            <Grid item xs={12} md={6}>
+              <Typography variant="h6" gutterBottom>
+                メモ
+              </Typography>
+              <Typography variant="body1" paragraph>
+                {orderData.memo || 'なし'}
+              </Typography>
 
-            {/* お預かり金額の入力フォーム */}
-            <TextField
-              label="お預かり金額"
-              variant="outlined"
-              fullWidth
-              value={deposit}
-              onChange={handleDepositChange}
-              placeholder="金額を入力"
-              sx={{ marginBottom: 2 }}
-              type="number"
-            />
+              <Typography variant="h6" gutterBottom>
+                合計金額: {orderData.total} 円
+              </Typography>
 
-            {/* お釣りの表示 */}
-            <Typography variant="h6" gutterBottom>
-              お釣り: {change} 円
-            </Typography>
+              {/* お預かり金額の入力フォーム */}
+              <TextField
+                label="お預かり金額"
+                variant="outlined"
+                fullWidth
+                value={deposit}
+                onChange={handleDepositChange}
+                placeholder="金額を入力"
+                sx={{ marginBottom: 2 }}
+                type="number"
+              />
 
-            {/* 支払い完了ボタン */}
-            <Button
-              variant="contained"
-              color="primary"
-              fullWidth
-              onClick={handlePaymentComplete}
-              sx={{ marginTop: 2 }}
-              disabled={change < 0 || deposit === ''}
-            >
-              支払い完了
-            </Button>
-          </>
+              {/* お釣りの表示 */}
+              <Typography variant="h6" gutterBottom>
+                お釣り: {change} 円
+              </Typography>
+
+              {/* 支払い完了ボタン */}
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={handlePaymentComplete}
+                sx={{ marginTop: 2 }}
+                disabled={change < 0 || deposit === ''}
+              >
+                支払い完了
+              </Button>
+            </Grid>
+          </Grid>
         ) : (
           <Typography variant="body1">注文データがありません。</Typography>
         )}

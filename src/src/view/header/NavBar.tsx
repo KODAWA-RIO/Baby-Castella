@@ -41,8 +41,8 @@ const NavBar: React.FC = () => {
             <Box sx={{ ml: 2 }}>
               <MenuItem onClick={handleMenuClose} component={Link} to="/reception/cooking">調理中</MenuItem>
               <MenuItem onClick={handleMenuClose} component={Link} to="/reception/preparation">準備中</MenuItem>
-              <MenuItem onClick={handleMenuClose} component={Link} to="/reception/receiving_customer">受け取り可能</MenuItem>
-              <MenuItem onClick={handleMenuClose} component={Link} to="/reception/receiving_staff">受け取り画面</MenuItem>
+              <MenuItem onClick={handleMenuClose} component={Link} to="/reception/receiving_staff">受け取り可能</MenuItem>
+              <MenuItem onClick={handleMenuClose} component={Link} to="/reception/receiving_customer">受け取り画面</MenuItem>
             </Box>
           </MenuItem>
           <MenuItem onClick={handleMenuClose} component={Link} to="/merchandise">メニュー一覧</MenuItem>
