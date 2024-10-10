@@ -1,19 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
-interface  Order{
+interface Order {
   id: number;
-  date: string;
+  updated_at: string;
   customer: string;
 }
-  
-const Orders: Order[] = [
-  { id: 1, date: '11/2', customer: 'あああ'},
-  { id: 2, date: '11/2', customer: 'いいい'},
-  { id: 3, date: '11/2', customer: 'ううう'},
-];
+
 const Order_index: React.FC = () => {
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    // LaravelのAPIからデータを取得
+    axios.get('http://localhost:8080/api/orders')
+      .then((response) => {
+        setOrders(response.data);
+      })
+      .catch((error) => {
+        console.error('データ取得エラー:', error);
+      });
+  }, []);
+
+  // 日付のフォーマット関数
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(); // ロケールに基づいた日付のフォーマット
+  };
+
   return (
     <Box sx={{ padding: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 2, width: '100%', maxWidth: 800 }}>
@@ -24,19 +39,19 @@ const Order_index: React.FC = () => {
                 <TableCell>ID</TableCell>
                 <TableCell>日付</TableCell>
                 <TableCell>お客様名</TableCell>
-                <TableCell >操作</TableCell>
+                <TableCell>操作</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {Orders.map((order) => (
+              {orders.map((order) => (
                 <TableRow key={order.id}>
                   <TableCell>{order.id}</TableCell>
-                  <TableCell>{order.date}</TableCell>
+                  <TableCell>{formatDate(order.updated_at)}</TableCell> {/* 日付をフォーマットして表示 */}
                   <TableCell>{order.customer}様</TableCell>
-                  <TableCell >
-                      <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} component={Link} to="/order/show">
-                          詳細
-                      </Button>
+                  <TableCell>
+                    <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} component={Link} to="/order/show">
+                      詳細
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

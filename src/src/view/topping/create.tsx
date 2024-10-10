@@ -1,17 +1,46 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box, Typography, Container, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { TextField, Button, Box, Typography, Container } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; // useNavigateをインポート
+import axios from 'axios';
 
-const Topping_create: React.FC = () => {
-  const [topping_name, settopping_name] = useState('');
-  const [topping_price, settopping_price] = useState('');
-  const [topping_display, settopping_display] = useState('');
+const ToppingCreate: React.FC = () => {
+  const [toppingName, setToppingName] = useState('');
+  const [toppingPrice, setToppingPrice] = useState('');
+  const [errorMessage, setErrorMessage] = useState(''); // エラーメッセージを表示するための状態
+  const navigate = useNavigate(); // useNavigateフックを呼び出し
 
-  const handleCreate = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleCreate = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // 商品登録処理のロジックをここに追加
-    console.log('トッピング名:', topping_name);
-    console.log('値段:', topping_price);
-    console.log('表示:', topping_display);
+    
+    // 送信前のバリデーション（toppingPriceが数値かどうかチェック）
+    const parsedPrice = parseFloat(toppingPrice);
+    if (isNaN(parsedPrice)) {
+      setErrorMessage('値段は数値で入力してください。');
+      return;
+    }
+
+    // 送信データの作成
+    const formData = {
+      topping_name: toppingName,
+      topping_price: parsedPrice, // 値段を数値に変換
+    };
+
+    try {
+      // Laravel APIにPOSTリクエスト
+      const response = await axios.post('http://localhost:8080/api/toppings/store', formData);
+      console.log(response.data);
+
+      // 登録が成功した場合、一覧画面にリダイレクト
+      navigate('/topping');
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        // AxiosErrorの場合の処理
+        setErrorMessage('登録に失敗しました: ' + (error.response?.data.message || '不明なエラー'));
+      } else {
+        // その他のエラー
+        setErrorMessage('予期しないエラーが発生しました。');
+      }
+    }
   };
 
   return (
@@ -27,19 +56,24 @@ const Topping_create: React.FC = () => {
         <Typography component="h1" variant="h5">
           トッピング登録
         </Typography>
+        {errorMessage && (
+          <Typography color="error" sx={{ mt: 2 }}>
+            {errorMessage}
+          </Typography>
+        )}
         <Box component="form" onSubmit={handleCreate} sx={{ mt: 1 }}>
           <TextField
             variant="outlined"
             margin="normal"
             required
             fullWidth
-            id="merchandiseName"
+            id="toppingName"
             label="トッピング名"
-            name="merchandiseName"
-            autoComplete="merchandise-name"
+            name="toppingName"
+            autoComplete="topping-name"
             autoFocus
-            value={topping_name}
-            onChange={(e) => settopping_name(e.target.value)}
+            value={toppingName}
+            onChange={(e) => setToppingName(e.target.value)}
           />
           <TextField
             variant="outlined"
@@ -50,22 +84,9 @@ const Topping_create: React.FC = () => {
             label="値段"
             name="price"
             autoComplete="price"
-            value={topping_price}
-            onChange={(e) => settopping_price(e.target.value)}
+            value={toppingPrice}
+            onChange={(e) => setToppingPrice(e.target.value)}
           />
-          <FormControl fullWidth margin="normal">
-            <InputLabel id="role-label">表示</InputLabel>
-            <Select
-              labelId="role-label"
-              id="role"
-              value={topping_display}
-              onChange={(e) => settopping_display(e.target.value)}
-              label="役割"
-            >
-              <MenuItem value="admin">表示</MenuItem>
-              <MenuItem value="staff">非表示</MenuItem>
-            </Select>
-          </FormControl>
           <Button
             type="submit"
             fullWidth
@@ -81,4 +102,4 @@ const Topping_create: React.FC = () => {
   );
 };
 
-export default Topping_create;
+export default ToppingCreate;

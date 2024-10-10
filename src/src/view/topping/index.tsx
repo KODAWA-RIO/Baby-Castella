@@ -1,20 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 interface  Topping{
   id: number;
   topping_name: string;
   topping_price: number;
-  topping_display: boolean;
 }
-  
-const merchandises: Topping[] = [
-  { id: 1, topping_name: 'ハチミツ', topping_price: 50, topping_display: true},
-  { id: 2, topping_name: 'チョコ', topping_price: 50, topping_display: true},
-];
+
 
 const Topping_index: React.FC = () => {
+  const [toppings, setToppings] = useState<Topping[]>([]);
+
+  useEffect(() => {
+    // LaravelのAPIからデータを取得
+    axios.get('http://localhost:8080/api/toppings')
+      .then((response) => {
+        setToppings(response.data);
+      })
+      .catch((error) => {
+        console.error('データ取得エラー:', error);
+      });
+  }, []);
+
   return (
     <Box sx={{ padding: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 2, width: '100%', maxWidth: 800 }}>
@@ -25,17 +34,15 @@ const Topping_index: React.FC = () => {
                 <TableCell>ID</TableCell>
                 <TableCell>商品名</TableCell>
                 <TableCell>値段</TableCell>
-                <TableCell>表示</TableCell>
                 <TableCell >操作</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {merchandises.map((topping) => (
+              {toppings.map((topping) => (
                 <TableRow key={topping.id}>
                   <TableCell>{topping.id}</TableCell>
                   <TableCell>{topping.topping_name}</TableCell>
                   <TableCell>{topping.topping_price}</TableCell>
-                  <TableCell>{topping.topping_display ? '表示' : '非表示'}</TableCell>
                   <TableCell >
                       <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} component={Link} to="/topping/edit">
                           編集

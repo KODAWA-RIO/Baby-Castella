@@ -1,19 +1,40 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box, Typography, Container, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { TextField, Button, Box, Typography, Container } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; // useNavigateをインポート
+import axios from 'axios';
 
 const MerchandiseCreate: React.FC = () => {
-  const [merchandise_name, setmerchandise_name] = useState('');
-  const [merchandise_price, setmerchandise_price] = useState('');
+  const [merchandise_name, setMerchandiseName] = useState('');
+  const [merchandise_price, setMerchandisePrice] = useState('');
   const [stock, setStock] = useState('');
-  const [merchandise_display, setmerchandise_display] = useState('');
+  const navigate = useNavigate(); // useNavigateフックを呼び出し
 
-  const handleCreate = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleCreate = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // 商品登録処理のロジックをここに追加
-    console.log('商品名:', merchandise_name);
-    console.log('値段:', merchandise_price);
-    console.log('在庫:', stock);
-    console.log('表示:', merchandise_display);
+
+    // 送信データの作成
+    const formData = {
+      merchandise_name: merchandise_name,
+      merchandise_price: parseFloat(merchandise_price), // 値段を数値に変換
+      stock: parseInt(stock, 10), // 在庫を数値に変換
+    };
+
+    try {
+      // Laravel APIにPOSTリクエスト
+      const response = await axios.post('http://localhost:8080/api/merchandises/store', formData);
+      console.log(response.data);
+
+      // 登録が成功した場合、一覧画面にリダイレクト
+      navigate('/merchandise');
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        // AxiosErrorの場合の処理
+        console.error('Axios error response:', error.response?.data);
+      } else {
+        // その他のエラー
+        console.error('Unexpected error:', error);
+      }
+    }
   };
 
   return (
@@ -41,7 +62,7 @@ const MerchandiseCreate: React.FC = () => {
             autoComplete="merchandise-name"
             autoFocus
             value={merchandise_name}
-            onChange={(e) => setmerchandise_name(e.target.value)}
+            onChange={(e) => setMerchandiseName(e.target.value)}
           />
           <TextField
             variant="outlined"
@@ -53,7 +74,8 @@ const MerchandiseCreate: React.FC = () => {
             name="price"
             autoComplete="price"
             value={merchandise_price}
-            onChange={(e) => setmerchandise_price(e.target.value)}
+            onChange={(e) => setMerchandisePrice(e.target.value)}
+            type="number" // 入力を数値に限定
           />
           <TextField
             variant="outlined"
@@ -66,20 +88,8 @@ const MerchandiseCreate: React.FC = () => {
             autoComplete="stock"
             value={stock}
             onChange={(e) => setStock(e.target.value)}
+            type="number" // 入力を数値に限定
           />
-          <FormControl fullWidth margin="normal">
-            <InputLabel id="role-label">表示</InputLabel>
-            <Select
-              labelId="role-label"
-              id="role"
-              value={merchandise_display}
-              onChange={(e) => setmerchandise_display(e.target.value)}
-              label="役割"
-            >
-              <MenuItem value="admin">表示</MenuItem>
-              <MenuItem value="staff">非表示</MenuItem>
-            </Select>
-          </FormControl>
           <Button
             type="submit"
             fullWidth
