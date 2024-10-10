@@ -7,9 +7,10 @@ import Merchandise_edit from '../view/merchandise/edit';
 const MerchandiseRoutes: React.FC = () => {
   return (
     <Routes>
-        <Route path="/" element={<Merchandise_index />} />
-        <Route path="/create" element={<Merchandise_create />} />
-        <Route path="/edit" element={<Merchandise_edit />} />
+      <Route path="/" element={<Merchandise_index />} />
+      <Route path="/create" element={<Merchandise_create />} />
+      {/* 商品IDをURLパラメータとして渡す */}
+      <Route path="/edit/:id" element={<Merchandise_edit />} />
     </Routes>
   );
 };

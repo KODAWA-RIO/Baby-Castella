@@ -24,6 +24,20 @@ const Merchandise_index: React.FC = () => {
       });
   }, []);
 
+  // 削除機能
+  const handleDelete = (id: number) => {
+    if (window.confirm('本当に削除しますか？')) {
+      axios.delete(`http://localhost:8080/api/merchandises/${id}`)
+        .then(() => {
+          // 削除後、UI上でも削除するために状態を更新
+          setMerchandises(prevMerchandises => prevMerchandises.filter(merchandise => merchandise.id !== id));
+        })
+        .catch((error) => {
+          console.error('削除エラー:', error);
+        });
+    }
+  };
+
   return (
     <Box sx={{ padding: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 2, width: '100%', maxWidth: 800 }}>
@@ -49,7 +63,12 @@ const Merchandise_index: React.FC = () => {
                     <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} component={Link} to={`/merchandise/edit/${merchandise.id}`}>
                       編集
                     </Button>
-                    <Button variant="contained" color="secondary" size="small">
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      size="small"
+                      onClick={() => handleDelete(merchandise.id)}
+                    >
                       削除
                     </Button>
                   </TableCell>
