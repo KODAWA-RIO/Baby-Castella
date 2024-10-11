@@ -52,7 +52,7 @@ const Order_create_2: React.FC = () => {
                   ))}
               </List>
 
-              {orderData.toppings.length > 0 && (
+              {orderData.toppings && orderData.toppings.length > 0 ? (
                 <>
                   <Typography variant="h6" gutterBottom>
                     選択されたトッピング
@@ -60,11 +60,13 @@ const Order_create_2: React.FC = () => {
                   <List>
                     {orderData.toppings.map((topping: any, index: number) => (
                       <ListItem key={index}>
-                        <ListItemText primary={`${topping.name}: ${topping.price} 円`} />
+                        <ListItemText primary={`${topping.topping_name || topping.name}: ${topping.topping_price || topping.price} 円`} />
                       </ListItem>
                     ))}
                   </List>
                 </>
+              ) : (
+                <Typography variant="body1">選択されたトッピングがありません。</Typography>
               )}
             </Grid>
 

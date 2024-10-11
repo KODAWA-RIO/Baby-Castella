@@ -1,50 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, Grid, Paper, IconButton, TextField, FormControl, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
 import { Add, Remove } from '@mui/icons-material';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 interface Flavor {
-  name: string;
-  stock: number;
-  price: number;
+  merchandise_name: string; // 商品名
+  stock: number;           // 在庫
+  merchandise_price: number; // 商品価格
 }
 
 interface Topping {
-  name: string;
-  price: number;
+  topping_name: string;   // トッピング名
+  topping_price: number;  // トッピング価格
 }
 
-const initialFlavors: Flavor[] = [
-  { name: 'プレーン', stock: 1, price: 100 },
-  { name: 'チョコレート', stock: 40, price: 120 },
-  { name: '抹茶', stock: 40, price: 130 },
-  { name: 'ストロベリー', stock: 40, price: 150 },
-  { name: 'キャラメル', stock: 40, price: 140 },
-  { name: 'チーズ', stock: 40, price: 160 }
-];
-
-const toppings: Topping[] = [
-  { name: 'チョコチップ', price: 50 },
-  { name: 'ホイップクリーム', price: 70 },
-  { name: 'ナッツ', price: 60 },
-  { name: 'メープルシロップ', price: 80 }
-];
-
 const Order_create_1: React.FC = () => {
-  const [flavors, setFlavors] = useState<Flavor[]>(initialFlavors);
-  const [quantities, setQuantities] = useState<number[]>(Array(flavors.length).fill(0));
+  const [flavors, setFlavors] = useState<Flavor[]>([]);
+  const [quantities, setQuantities] = useState<number[]>([]);
+  const [toppings, setToppings] = useState<Topping[]>([]);
   const [selectedToppings, setSelectedToppings] = useState<Topping[]>([]);
   const [name, setName] = useState<string>('');
   const [memo, setMemo] = useState<string>('');
 
   const navigate = useNavigate();
 
+  // フレーバー（merchandises）とトッピング（toppings）のデータを取得
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // フレーバーのデータを取得
+        const flavorResponse = await axios.get('http://localhost:8080/api/merchandises');
+        setFlavors(flavorResponse.data);
+        setQuantities(Array(flavorResponse.data.length).fill(0)); // フレーバーに対応した数量配列を設定
+
+        // トッピングのデータを取得
+        const toppingResponse = await axios.get('http://localhost:8080/api/toppings');
+        setToppings(toppingResponse.data);
+      } catch (error) {
+        console.error('データの取得エラー:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const calculateTotal = () => {
     const flavorTotal = flavors.reduce(
-      (sum, flavor, index) => sum + flavor.price * quantities[index],
+      (sum, flavor, index) => sum + flavor.merchandise_price * quantities[index],
       0
     );
-    const toppingTotal = selectedToppings.reduce((sum, topping) => sum + topping.price, 0);
+    const toppingTotal = selectedToppings.reduce((sum, topping) => sum + topping.topping_price, 0);
 
     return flavorTotal + toppingTotal;
   };
@@ -74,22 +80,22 @@ const Order_create_1: React.FC = () => {
   };
 
   const handleToppingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const topping = toppings.find(t => t.name === event.target.name);
+    const topping = toppings.find(t => t.topping_name === event.target.name);
     if (event.target.checked && topping) {
       setSelectedToppings([...selectedToppings, topping]);
     } else {
-      setSelectedToppings(selectedToppings.filter(t => t.name !== event.target.name));
+      setSelectedToppings(selectedToppings.filter(t => t.topping_name !== event.target.name));
     }
   };
 
   const handleSubmit = () => {
     const orderData = {
       flavors: flavors.map((flavor, index) => ({
-        name: flavor.name,
+        name: flavor.merchandise_name,
         quantity: quantities[index],
-        price: flavor.price,
+        price: flavor.merchandise_price,
       })),
-      toppings: selectedToppings,
+      toppings: selectedToppings,  // トッピングのデータを渡す
       name,
       memo,
       total: calculateTotal(),
@@ -107,10 +113,10 @@ const Order_create_1: React.FC = () => {
       </Typography>
       <Grid container spacing={2} justifyContent="center">
         {flavors.map((flavor, index) => (
-          <Grid item xs={6} sm={4} key={flavor.name}>
+          <Grid item xs={6} sm={4} key={flavor.merchandise_name}>
             <Paper sx={{ padding: 2, textAlign: 'center', backgroundColor: '#d3d3d3' }}>
-              <Typography variant="h6">{flavor.name}</Typography>
-              <Typography variant="body1">価格: {flavor.price} 円</Typography>
+              <Typography variant="h6">{flavor.merchandise_name}</Typography>
+              <Typography variant="body1">価格: {flavor.merchandise_price} 円</Typography>
               {flavor.stock === 0 ? (
                 <Typography variant="h6" color="error">
                   SOLD OUT
@@ -139,9 +145,9 @@ const Order_create_1: React.FC = () => {
           <FormGroup row sx={{ justifyContent: 'center' }}>
             {toppings.map(topping => (
               <FormControlLabel
-                control={<Checkbox checked={selectedToppings.some(t => t.name === topping.name)} onChange={handleToppingChange} name={topping.name} />}
-                label={`${topping.name} (${topping.price} 円)`}
-                key={topping.name}
+                control={<Checkbox checked={selectedToppings.some(t => t.topping_name === topping.topping_name)} onChange={handleToppingChange} name={topping.topping_name} />}
+                label={`${topping.topping_name} (${topping.topping_price} 円)`}
+                key={topping.topping_name}
               />
             ))}
           </FormGroup>
@@ -170,7 +176,6 @@ const Order_create_1: React.FC = () => {
       </Box>
 
       <Box sx={{ textAlign: 'center', marginTop: 4 }}>
-        
         <Button
           variant="contained"
           color="primary"
