@@ -9,7 +9,7 @@ const ToppingRoutes: React.FC = () => {
     <Routes>
         <Route path="/" element={<Topping_index />} />
         <Route path="/create" element={<Topping_create />} />
-        <Route path="/edit" element={<Topping_edit />} />
+        <Route path="/edit/:id" element={<Topping_edit />} />
     </Routes>
   );
 };

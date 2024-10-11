@@ -1,91 +1,104 @@
-import React, { useState } from 'react';
-import { TextField, Button, Box, Typography, Container, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { TextField, Button, Box, Typography, Container } from '@mui/material';
+import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
 
-interface Topping {
-  id: number;
-  topping_name: string;
-  topping_price: string;
-  topping_display: string;
-}
+const ToppingEdit: React.FC = () => {
+  const { id } = useParams<{ id: string }>(); // URLからトッピングIDを取得
+  const [toppingName, setToppingName] = useState('');
+  const [toppingPrice, setToppingPrice] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
 
-const Topping_edit: React.FC<{ topping: Topping }> = ({ topping }) => {
-    const [topping_name, setToppingName] = useState(topping.topping_name);
-    const [topping_price, setToppingPrice] = useState(topping.topping_price);
-    const [topping_display, setToppingDisplay] = useState(topping.topping_display);
-  
-    const handleEdit = (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      // トッピング編集処理のロジックをここに追加
-      console.log('トッピング名:', topping_name);
-      console.log('値段:', topping_price);
-      console.log('表示:', topping_display);
+  // トッピングデータを取得してフォームにセット
+  useEffect(() => {
+    axios.get(`http://localhost:8080/api/toppings/${id}`)
+      .then(response => {
+        const topping = response.data;
+        setToppingName(topping.topping_name);
+        setToppingPrice(topping.topping_price);
+      })
+      .catch(error => {
+        console.error('トッピングデータの取得エラー:', error);
+        setErrorMessage('トッピングデータの取得に失敗しました');
+      });
+  }, [id]);
+
+  const handleUpdate = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const updatedData = {
+      topping_name: toppingName,
+      topping_price: toppingPrice,
     };
-  
-    return (
-      <Container component="main" maxWidth="xs">
-        <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Typography component="h1" variant="h5">
-            トッピング編集
+
+    try {
+      // 更新リクエストを送信
+      await axios.put(`http://localhost:8080/api/toppings/${id}`, updatedData);
+      navigate('/toppings'); // 更新後、トッピング一覧ページにリダイレクト
+    } catch (error) {
+      console.error('トッピングの更新エラー:', error);
+      setErrorMessage('トッピングの更新に失敗しました');
+    }
+  };
+
+  return (
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Typography component="h1" variant="h5">
+          トッピング編集
+        </Typography>
+        {errorMessage && (
+          <Typography color="error" sx={{ mt: 2 }}>
+            {errorMessage}
           </Typography>
-          <Box component="form" onSubmit={handleEdit} sx={{ mt: 1 }}>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="toppingName"
-              label="トッピング名"
-              name="toppingName"
-              autoComplete="topping-name"
-              autoFocus
-              value={topping_name}
-              onChange={(e) => setToppingName(e.target.value)}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="price"
-              label="値段"
-              name="price"
-              autoComplete="price"
-              value={topping_price}
-              onChange={(e) => setToppingPrice(e.target.value)}
-            />
-            <FormControl fullWidth margin="normal">
-              <InputLabel id="role-label">表示</InputLabel>
-              <Select
-                labelId="role-label"
-                id="role"
-                value={topping_display}
-                onChange={(e) => setToppingDisplay(e.target.value)}
-                label="表示"
-              >
-                <MenuItem value="true">表示</MenuItem>
-                <MenuItem value="false">非表示</MenuItem>
-              </Select>
-            </FormControl>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              保存
-            </Button>
-          </Box>
+        )}
+        <Box component="form" onSubmit={handleUpdate} sx={{ mt: 1 }}>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="toppingName"
+            label="トッピング名"
+            name="toppingName"
+            autoComplete="topping-name"
+            autoFocus
+            value={toppingName}
+            onChange={(e) => setToppingName(e.target.value)}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="price"
+            label="値段"
+            name="price"
+            autoComplete="price"
+            value={toppingPrice}
+            onChange={(e) => setToppingPrice(e.target.value)}
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            保存
+          </Button>
         </Box>
-      </Container>
-    );
+      </Box>
+    </Container>
+  );
 };
 
-export default Topping_edit;
+export default ToppingEdit;
