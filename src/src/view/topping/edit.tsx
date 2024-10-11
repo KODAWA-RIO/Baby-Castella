@@ -35,7 +35,7 @@ const ToppingEdit: React.FC = () => {
     try {
       // 更新リクエストを送信
       await axios.put(`http://localhost:8080/api/toppings/${id}`, updatedData);
-      navigate('/toppings'); // 更新後、トッピング一覧ページにリダイレクト
+      navigate('/topping'); // 更新後、トッピング一覧ページにリダイレクト
     } catch (error) {
       console.error('トッピングの更新エラー:', error);
       setErrorMessage('トッピングの更新に失敗しました');
