@@ -7,6 +7,7 @@ interface Topping {
   id: number;
   topping_name: string;
   topping_price: number;
+  topping_display: boolean; // 表示/非表示の追加
 }
 
 const Topping_index: React.FC = () => {
@@ -48,6 +49,7 @@ const Topping_index: React.FC = () => {
                 <TableCell>ID</TableCell>
                 <TableCell>トッピング名</TableCell>
                 <TableCell>値段</TableCell>
+                <TableCell>表示</TableCell> {/* 新しく追加 */}
                 <TableCell>操作</TableCell>
               </TableRow>
             </TableHead>
@@ -57,6 +59,7 @@ const Topping_index: React.FC = () => {
                   <TableCell>{topping.id}</TableCell>
                   <TableCell>{topping.topping_name}</TableCell>
                   <TableCell>{topping.topping_price}</TableCell>
+                  <TableCell>{topping.topping_display ? '表示' : '非表示'}</TableCell> {/* 新しく追加 */}
                   <TableCell>
                     <Button 
                       variant="contained" 

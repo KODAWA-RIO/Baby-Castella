@@ -1,32 +1,25 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box, Typography, Container } from '@mui/material';
+import { TextField, Button, Box, Typography, Container, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom'; // useNavigateをインポート
 import axios from 'axios';
 
 const ToppingCreate: React.FC = () => {
   const [toppingName, setToppingName] = useState('');
   const [toppingPrice, setToppingPrice] = useState('');
-  const [errorMessage, setErrorMessage] = useState(''); // エラーメッセージを表示するための状態
-  const navigate = useNavigate(); // useNavigateフックを呼び出し
+  const [toppingDisplay, setToppingDisplay] = useState('1'); // デフォルトは表示
+  const [errorMessage, setErrorMessage] = useState(''); 
+  const navigate = useNavigate();
 
   const handleCreate = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    
-    // 送信前のバリデーション（toppingPriceが数値かどうかチェック）
-    const parsedPrice = parseFloat(toppingPrice);
-    if (isNaN(parsedPrice)) {
-      setErrorMessage('値段は数値で入力してください。');
-      return;
-    }
 
-    // 送信データの作成
     const formData = {
       topping_name: toppingName,
-      topping_price: parsedPrice, // 値段を数値に変換
+      topping_price: parseFloat(toppingPrice), // 値段を数値に変換
+      topping_display: toppingDisplay === '1', // 表示/非表示の変換
     };
 
     try {
-      // Laravel APIにPOSTリクエスト
       const response = await axios.post('http://localhost:8080/api/toppings/store', formData);
       console.log(response.data);
 
@@ -34,10 +27,8 @@ const ToppingCreate: React.FC = () => {
       navigate('/topping');
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        // AxiosErrorの場合の処理
         setErrorMessage('登録に失敗しました: ' + (error.response?.data.message || '不明なエラー'));
       } else {
-        // その他のエラー
         setErrorMessage('予期しないエラーが発生しました。');
       }
     }
@@ -45,14 +36,7 @@ const ToppingCreate: React.FC = () => {
 
   return (
     <Container component="main" maxWidth="xs">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
+      <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Typography component="h1" variant="h5">
           トッピング登録
         </Typography>
@@ -83,17 +67,22 @@ const ToppingCreate: React.FC = () => {
             id="price"
             label="値段"
             name="price"
-            autoComplete="price"
             value={toppingPrice}
             onChange={(e) => setToppingPrice(e.target.value)}
           />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            sx={{ mt: 3, mb: 2 }}
-          >
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="display-select-label">表示設定</InputLabel>
+            <Select
+              labelId="display-select-label"
+              id="toppingDisplay"
+              value={toppingDisplay}
+              onChange={(e) => setToppingDisplay(e.target.value)}
+            >
+              <MenuItem value="1">表示</MenuItem>
+              <MenuItem value="0">非表示</MenuItem>
+            </Select>
+          </FormControl>
+          <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 3, mb: 2 }}>
             登録
           </Button>
         </Box>
