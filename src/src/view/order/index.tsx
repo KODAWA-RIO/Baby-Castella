@@ -49,7 +49,15 @@ const Order_index: React.FC = () => {
                   <TableCell>{formatDate(order.updated_at)}</TableCell> {/* 日付をフォーマットして表示 */}
                   <TableCell>{order.customer}様</TableCell>
                   <TableCell>
-                    <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} component={Link} to="/order/show">
+                    {/* 詳細ボタンのリンク先を注文ID付きに変更 */}
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      sx={{ mr: 1 }}
+                      component={Link}
+                      to={`/order/show/${order.id}`}
+                    >
                       詳細
                     </Button>
                   </TableCell>

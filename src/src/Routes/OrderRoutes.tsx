@@ -11,7 +11,8 @@ const OrderRoutes: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<Order_index />} />
-      <Route path="show" element={<Order_show />} />
+      {/* IDを受け取るルートに変更 */}
+      <Route path="show/:id" element={<Order_show />} />
       <Route path="create_1" element={<Order_create_1 />} />
       <Route path="create_2" element={<Order_create_2 />} />
       <Route path="edit_1" element={<Order_edit_1 />} />
