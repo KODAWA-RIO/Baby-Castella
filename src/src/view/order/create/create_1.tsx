@@ -5,14 +5,16 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 interface Flavor {
-  merchandise_name: string; // 商品名
-  stock: number;           // 在庫
+  merchandise_name: string;  // 商品名
+  stock: number;             // 在庫
   merchandise_price: number; // 商品価格
+  merchandise_display: boolean; // 商品の表示/非表示
 }
 
 interface Topping {
   topping_name: string;   // トッピング名
   topping_price: number;  // トッピング価格
+  topping_display: boolean; // トッピングの表示/非表示
 }
 
 const Order_create_1: React.FC = () => {
@@ -29,14 +31,16 @@ const Order_create_1: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // フレーバーのデータを取得
+        // フレーバーのデータを取得し、表示に設定されているものだけを残す
         const flavorResponse = await axios.get('http://localhost:8080/api/merchandises');
-        setFlavors(flavorResponse.data);
-        setQuantities(Array(flavorResponse.data.length).fill(0)); // フレーバーに対応した数量配列を設定
+        const displayedFlavors = flavorResponse.data.filter((flavor: Flavor) => flavor.merchandise_display); // 表示されるものだけ
+        setFlavors(displayedFlavors);
+        setQuantities(Array(displayedFlavors.length).fill(0)); // フレーバーに対応した数量配列を設定
 
-        // トッピングのデータを取得
+        // トッピングのデータを取得し、表示に設定されているものだけを残す
         const toppingResponse = await axios.get('http://localhost:8080/api/toppings');
-        setToppings(toppingResponse.data);
+        const displayedToppings = toppingResponse.data.filter((topping: Topping) => topping.topping_display); // 表示されるものだけ
+        setToppings(displayedToppings);
       } catch (error) {
         console.error('データの取得エラー:', error);
       }
