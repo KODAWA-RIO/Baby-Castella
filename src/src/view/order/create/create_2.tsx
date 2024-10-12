@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom'; // useNavigate をインポート
 import { Box, Button, Typography, TextField, Paper, List, ListItem, ListItemText, Grid } from '@mui/material';
+import axios from 'axios'; // axiosをインポート
 
 const Order_create_2: React.FC = () => {
   const location = useLocation();
@@ -8,6 +9,7 @@ const Order_create_2: React.FC = () => {
 
   const [deposit, setDeposit] = useState<number | string>('');  // お預かり金額
   const [change, setChange] = useState<number>(0);  // お釣り
+  const navigate = useNavigate(); // navigateフック
 
   useEffect(() => {
     if (typeof deposit === 'number' && deposit >= orderData.total) {
@@ -23,9 +25,28 @@ const Order_create_2: React.FC = () => {
     setDeposit(!isNaN(numericValue) ? numericValue : value);
   };
 
-  const handlePaymentComplete = () => {
-    // 支払い完了の処理をここに追加
-    alert('支払いが完了しました！');
+  const handlePaymentComplete = async () => {
+    try {
+      // 支払いデータをバックエンドに送信
+      const response = await axios.post('http://localhost:8080/api/orders', {
+        customer: orderData.name,
+        total_amount: orderData.total,
+        deposit_amount: deposit,
+        change: change,
+        memo: orderData.memo,
+        situation: 1, // 進捗状況を 1（新規注文など）で固定
+        flavors: orderData.flavors,
+        toppings: orderData.toppings,
+      });
+
+      alert('支払いが完了しました！注文ID: ' + response.data.order_id);
+      
+      // 支払い完了後に /order/create_1 にリダイレクト
+      navigate('/order/create_1'); // 支払い完了後のリダイレクト先
+    } catch (error) {
+      console.error('支払いエラー:', error);
+      alert('支払いに失敗しました。再度お試しください。');
+    }
   };
 
   return (
