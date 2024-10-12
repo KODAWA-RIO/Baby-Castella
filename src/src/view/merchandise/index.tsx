@@ -8,6 +8,7 @@ interface Merchandise {
   merchandise_name: string;
   merchandise_price: number;
   stock: number;
+  merchandise_display: boolean; // 表示/非表示フラグを追加
 }
 
 const Merchandise_index: React.FC = () => {
@@ -49,6 +50,7 @@ const Merchandise_index: React.FC = () => {
                 <TableCell>商品名</TableCell>
                 <TableCell>値段</TableCell>
                 <TableCell>在庫</TableCell>
+                <TableCell>表示</TableCell> {/* 新しく追加 */}
                 <TableCell>操作</TableCell>
               </TableRow>
             </TableHead>
@@ -59,6 +61,7 @@ const Merchandise_index: React.FC = () => {
                   <TableCell>{merchandise.merchandise_name}</TableCell>
                   <TableCell>{merchandise.merchandise_price}</TableCell>
                   <TableCell>{merchandise.stock}</TableCell>
+                  <TableCell>{merchandise.merchandise_display ? '表示' : '非表示'}</TableCell> {/* 新しく追加 */}
                   <TableCell>
                     <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} component={Link} to={`/merchandise/edit/${merchandise.id}`}>
                       編集

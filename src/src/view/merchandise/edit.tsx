@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Box, Typography, Container } from '@mui/material';
+import { TextField, Button, Box, Typography, Container, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const MerchandiseEdit: React.FC = () => {
-  const { id } = useParams<{ id: string }>(); // URLから商品IDを取得
+  const { id } = useParams<{ id: string }>();
   const [merchandiseName, setMerchandiseName] = useState('');
   const [merchandisePrice, setMerchandisePrice] = useState('');
   const [stock, setStock] = useState('');
+  const [merchandiseDisplay, setMerchandiseDisplay] = useState('1');
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
-  // 商品データを取得してフォームにセット
   useEffect(() => {
     axios.get(`http://localhost:8080/api/merchandises/${id}`)
       .then(response => {
@@ -19,6 +19,7 @@ const MerchandiseEdit: React.FC = () => {
         setMerchandiseName(merchandise.merchandise_name);
         setMerchandisePrice(merchandise.merchandise_price);
         setStock(merchandise.stock);
+        setMerchandiseDisplay(merchandise.merchandise_display ? '1' : '0');
       })
       .catch(error => {
         console.error('Error fetching merchandise:', error);
@@ -33,12 +34,12 @@ const MerchandiseEdit: React.FC = () => {
       merchandise_name: merchandiseName,
       merchandise_price: merchandisePrice,
       stock: stock,
+      merchandise_display: merchandiseDisplay === '1',
     };
 
     try {
-      // 更新リクエストを送信
       await axios.put(`http://localhost:8080/api/merchandises/${id}`, updatedData);
-      navigate('/merchandise'); // 更新後、商品一覧ページにリダイレクト
+      navigate('/merchandise');
     } catch (error) {
       console.error('Error updating merchandise:', error);
       setErrorMessage('商品の更新に失敗しました');
@@ -47,14 +48,7 @@ const MerchandiseEdit: React.FC = () => {
 
   return (
     <Container component="main" maxWidth="xs">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
+      <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Typography component="h1" variant="h5">
           商品編集
         </Typography>
@@ -71,9 +65,6 @@ const MerchandiseEdit: React.FC = () => {
             fullWidth
             id="merchandiseName"
             label="商品名"
-            name="merchandiseName"
-            autoComplete="merchandise-name"
-            autoFocus
             value={merchandiseName}
             onChange={(e) => setMerchandiseName(e.target.value)}
           />
@@ -84,10 +75,9 @@ const MerchandiseEdit: React.FC = () => {
             fullWidth
             id="price"
             label="値段"
-            name="price"
-            autoComplete="price"
             value={merchandisePrice}
             onChange={(e) => setMerchandisePrice(e.target.value)}
+            type="number"
           />
           <TextField
             variant="outlined"
@@ -96,18 +86,24 @@ const MerchandiseEdit: React.FC = () => {
             fullWidth
             id="stock"
             label="在庫"
-            name="stock"
-            autoComplete="stock"
             value={stock}
             onChange={(e) => setStock(e.target.value)}
+            type="number"
           />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            sx={{ mt: 3, mb: 2 }}
-          >
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="display-select-label">表示設定</InputLabel>
+            <Select
+              labelId="display-select-label"
+              id="merchandiseDisplay"
+              value={merchandiseDisplay}
+              label="表示設定"
+              onChange={(e) => setMerchandiseDisplay(e.target.value)}
+            >
+              <MenuItem value="1">表示</MenuItem>
+              <MenuItem value="0">非表示</MenuItem>
+            </Select>
+          </FormControl>
+          <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 3, mb: 2 }}>
             更新
           </Button>
         </Box>
