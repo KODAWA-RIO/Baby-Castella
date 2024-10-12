@@ -1,15 +1,27 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Typography, Container } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext'; // 認証コンテキストをインポート
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
+  const { login } = useAuth(); // 認証関数を取得
 
   const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // ログイン処理のロジックをここに追加
-    console.log('Email:', email);
-    console.log('Password:', password);
+    
+    // パスワードに応じて権限を分ける
+    if (password === '1111') {
+      login('admin'); // 管理者としてログイン
+      navigate('/order/create_1'); // ログイン成功時に共通リダイレクト
+    } else if (password === '0000') {
+      login('general'); // 一般ユーザーとしてログイン
+      navigate('/order/create_1'); // ログイン成功時に共通リダイレクト
+    } else {
+      setErrorMessage('パスワードが正しくありません');
+    }
   };
 
   return (
@@ -31,19 +43,6 @@ const Login: React.FC = () => {
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="学籍番号"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
             name="password"
             label="パスワード"
             type="password"
@@ -52,6 +51,11 @@ const Login: React.FC = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          {errorMessage && (
+            <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+              {errorMessage}
+            </Typography>
+          )}
           <Button
             type="submit"
             fullWidth

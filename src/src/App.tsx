@@ -9,6 +9,9 @@ import ReceptionRoutes from './Routes/ReceptionRoutes';
 import MerchandiseRoutes from './Routes/MerchandiseRoutes';
 import ToppingRoutes from './Routes/ToppingRoutes';
 import SalesRoutes from './Routes/SalesRoutes';
+// 認証とPrivateRouteをインポート
+import { AuthProvider } from './context/AuthContext';
+import PrivateRoute from './components/PrivateRoute';
 
 interface LayoutProps {
   children: ReactNode; // childrenの型を指定
@@ -34,19 +37,23 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <Layout>
-        <Routes>
-          {/* 各セクションに固有のベースパスを指定 */}
-          <Route path="/user/*" element={<UserRoutes />} />
-          <Route path="/order/*" element={<OrderRoutes />} />
-          <Route path="/reception/*" element={<ReceptionRoutes />} />
-          <Route path="/merchandise/*" element={<MerchandiseRoutes />} />
-          <Route path="/topping/*" element={<ToppingRoutes />} />
-          <Route path="/sales/*" element={<SalesRoutes />} />
-        </Routes>
-      </Layout>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Layout>
+          <Routes>
+            {/* 各セクションに固有のベースパスを指定 */}
+            <Route path="/user/*" element={<UserRoutes />} />
+            {/* 認証が必要なルートにはPrivateRouteを使用 */}
+            <Route path="/order/*" element={<PrivateRoute element={<OrderRoutes />} allowedRoles={['admin', 'general']} />} />
+            <Route path="/reception/*" element={<PrivateRoute element={<ReceptionRoutes />} allowedRoles={['admin', 'general']} />} />
+            {/* 管理者のみアクセスできるルート */}
+            <Route path="/merchandise/*" element={<PrivateRoute element={<MerchandiseRoutes />} allowedRoles={['admin']} />} />
+            <Route path="/topping/*" element={<PrivateRoute element={<ToppingRoutes />} allowedRoles={['admin']} />} />
+            <Route path="/sales/*" element={<PrivateRoute element={<SalesRoutes />} allowedRoles={['admin']} />} />
+          </Routes>
+        </Layout>
+      </Router>
+    </AuthProvider>
   );
 };
 
