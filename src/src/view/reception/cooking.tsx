@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Typography, Paper, Divider, CircularProgress } from '@mui/material';
-import { useNavigate } from 'react-router-dom'; // React Routerのインポート
 import axios from 'axios';
 
 interface Order {
@@ -16,7 +15,6 @@ const OrderTicketList: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrderId, setLoadingOrderId] = useState<number | null>(null); // ローディング状態管理
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const navigate = useNavigate(); // useNavigateフックの使用
 
   // APIからデータを取得
   useEffect(() => {
@@ -40,14 +38,15 @@ const OrderTicketList: React.FC = () => {
         situation: 2, // 常に2を代入
       });
   
-      // 成功したら、注文リストを更新
+      // 成功したら、注文リストを更新してページをリロード
       setOrders(prevOrders =>
         prevOrders.map(order =>
           order.id === orderId ? { ...order, situation: 2 } : order
         )
       );
-      // 調理完了後に /reception/cooking に遷移
-      navigate('/reception/cooking');
+
+      // 画面を更新する
+      window.location.reload();
     } catch (error) {
       const err = error as any;
       setErrorMessage('進捗の更新に失敗しました。');

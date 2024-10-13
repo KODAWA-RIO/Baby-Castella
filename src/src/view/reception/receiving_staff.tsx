@@ -1,97 +1,73 @@
-import React from 'react';
-import { Box, Button, Typography, Paper, Divider } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Button, Typography, Paper, Divider, CircularProgress } from '@mui/material';
+import axios from 'axios';
 
 interface Order {
+  id: number;
   name: string;
   items: { flavor: string, quantity: number }[];
   toppings: string[];
   memo: string;
+  situation: number; // situationの状態を追跡
 }
 
-// サンプルデータ
-const orders: Order[] = [
-  {
-    name: '山田 太郎',
-    items: [
-      { flavor: 'プレーン', quantity: 2 },
-      { flavor: 'チョコ', quantity: 1 },
-      { flavor: 'ストロベリー', quantity: 3 }
-    ],
-    toppings: ['チョコチップ', 'シナモン'],
-    memo: 'お持ち帰り希望',
-  },
-  {
-    name: '鈴木 一郎',
-    items: [
-      { flavor: 'プレーン', quantity: 1 },
-      { flavor: '抹茶', quantity: 2 }
-    ],
-    toppings: ['ホイップクリーム'],
-    memo: '店内で飲食',
-  },
-  {
-    name: '佐藤 花子',
-    items: [
-      { flavor: 'バニラ', quantity: 2 },
-      { flavor: 'ブルーベリー', quantity: 1 }
-    ],
-    toppings: ['カラメルソース', 'ナッツ'],
-    memo: 'なし',
-  },
-  {
-    name: '高橋 一子',
-    items: [
-      { flavor: 'プレーン', quantity: 1 },
-      { flavor: 'チーズ', quantity: 1 }
-    ],
-    toppings: ['ナッツ', 'メープルシロップ'],
-    memo: '誕生日用ケーキ',
-  },
-  {
-    name: '伊藤 次郎',
-    items: [
-      { flavor: 'チョコ', quantity: 2 },
-      { flavor: '抹茶', quantity: 1 }
-    ],
-    toppings: ['ホイップクリーム', 'チョコチップ'],
-    memo: 'テイクアウト',
-  },
-  {
-    name: '田中 三郎',
-    items: [
-      { flavor: 'キャラメル', quantity: 2 },
-      { flavor: '抹茶', quantity: 2 }
-    ],
-    toppings: ['シナモン', 'ナッツ'],
-    memo: 'なし',
-  },
-  {
-    name: '中村 四郎',
-    items: [
-      { flavor: 'プレーン', quantity: 3 },
-      { flavor: '抹茶', quantity: 2 }
-    ],
-    toppings: ['メープルシロップ'],
-    memo: '特別仕様で',
-  },
-  {
-    name: '林 五郎',
-    items: [
-      { flavor: 'ストロベリー', quantity: 1 },
-      { flavor: 'バニラ', quantity: 2 }
-    ],
-    toppings: ['ホイップクリーム'],
-    memo: 'お持ち帰り希望',
-  },
-];
-
 const OrderTicketList: React.FC = () => {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loadingOrderId, setLoadingOrderId] = useState<number | null>(null); // ローディング状態管理
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // APIからデータを取得
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/orders/situation/3'); // 受け取り可能の注文を取得
+        setOrders(response.data);
+      } catch (error) {
+        console.error('データの取得に失敗しました:', error);
+        setErrorMessage('データの取得に失敗しました');
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  // situationを指定した値に更新する関数
+  const handleUpdateSituation = async (orderId: number, newSituation: number) => {
+    setLoadingOrderId(orderId); // ローディング状態を設定
+    try {
+      await axios.put(`http://localhost:8080/api/orders/${orderId}`, {
+        situation: newSituation, // newSituationの値を代入
+      });
+
+      // 更新後に画面をリロード
+      window.location.reload();
+    } catch (error) {
+      const err = error as any;
+      setErrorMessage('進捗の更新に失敗しました。');
+      if (err.response && err.response.status === 422) {
+        console.error('バリデーションエラー:', err.response.data.errors);
+        setErrorMessage('バリデーションエラーが発生しました。');
+      } else {
+        console.error('situationの更新に失敗しました:', err);
+      }
+    } finally {
+      setLoadingOrderId(null); // ローディング状態解除
+    }
+  };
+
   return (
     <Box sx={{ padding: 4 }}>
       {/* 画面タイトル */}
       <Typography variant="h6" gutterBottom textAlign="center">
         受け取り可能
       </Typography>
+
+      {/* エラーメッセージ表示 */}
+      {errorMessage && (
+        <Typography variant="body1" color="error" gutterBottom textAlign="center">
+          {errorMessage}
+        </Typography>
+      )}
 
       {/* 横スクロール可能なボックス */}
       <Box sx={{ overflowX: 'auto' }}>
@@ -138,11 +114,33 @@ const OrderTicketList: React.FC = () => {
               <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
 
               <Box sx={{ textAlign: 'center', marginTop: 2 }}>
-                <Button variant="contained" color="secondary" sx={{ mr: 1 }}>
-                  準備中に戻る
+                {/* 準備中に戻るボタン: situationを3に更新 */}
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  sx={{ mr: 1 }}
+                  onClick={() => handleUpdateSituation(order.id, 2)}
+                  disabled={loadingOrderId === order.id} // ローディング中は無効にする
+                >
+                  {loadingOrderId === order.id ? (
+                    <CircularProgress size={24} />
+                  ) : (
+                    '準備中に戻る'
+                  )}
                 </Button>
-                <Button variant="contained" color="primary">
-                  受け取り完了
+
+                {/* 受け取り完了ボタン: situationを4に更新 */}
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleUpdateSituation(order.id, 4)}
+                  disabled={loadingOrderId === order.id} // ローディング中は無効にする
+                >
+                  {loadingOrderId === order.id ? (
+                    <CircularProgress size={24} />
+                  ) : (
+                    '受け取り完了'
+                  )}
                 </Button>
               </Box>
             </Paper>

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Typography, Paper, Divider, CircularProgress } from '@mui/material';
-import { useNavigate } from 'react-router-dom'; // React Routerのインポート
 import axios from 'axios';
 
 interface Order {
@@ -16,7 +15,6 @@ const OrderTicketList: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrderId, setLoadingOrderId] = useState<number | null>(null); // ローディング状態管理
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const navigate = useNavigate(); // useNavigateフックの使用
 
   // APIからデータを取得
   useEffect(() => {
@@ -35,22 +33,14 @@ const OrderTicketList: React.FC = () => {
 
   // situationを指定した値に更新する関数
   const handleUpdateSituation = async (orderId: number, newSituation: number) => {
+    setLoadingOrderId(orderId); // ローディング状態を設定
     try {
       await axios.put(`http://localhost:8080/api/orders/${orderId}`, {
         situation: newSituation, // newSituationの値を代入
       });
-  
-      // 成功したら、注文リストを更新
-      setOrders(prevOrders =>
-        prevOrders.map(order =>
-          order.id === orderId ? { ...order, situation: newSituation } : order
-        )
-      );
-      
-      // 状況に応じて画面遷移する場合があればここで記述する
-      if (newSituation === 2) {
-        navigate('/reception/cooking'); // 調理完了後に /reception/cooking に遷移
-      }
+
+      // 更新後に画面をリロード
+      window.location.reload();
     } catch (error) {
       const err = error as any;
       setErrorMessage('進捗の更新に失敗しました。');
