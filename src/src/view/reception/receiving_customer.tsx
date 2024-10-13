@@ -1,14 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Typography, Grid } from '@mui/material';
-
-// サンプルデータ
-const cookingOrders = ['田中 三郎', '佐藤 次郎'];
-const preparationOrders = ['山田 太郎', '鈴木 一郎'];
-const readyForPickupOrders = ['佐藤 花子', '田中 一郎'];
+import axios from 'axios';
 
 const OrderStatusDisplay: React.FC = () => {
+  const [cookingOrders, setCookingOrders] = useState<string[]>([]);
+  const [preparationOrders, setPreparationOrders] = useState<string[]>([]);
+  const [readyForPickupOrders, setReadyForPickupOrders] = useState<string[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // APIからデータを取得
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        // 調理中の注文を取得
+        const cookingResponse = await axios.get('http://localhost:8080/api/orders/situation/1');
+        setCookingOrders(cookingResponse.data.map((order: any) => order.name));
+
+        // 準備中の注文を取得
+        const preparationResponse = await axios.get('http://localhost:8080/api/orders/situation/2');
+        setPreparationOrders(preparationResponse.data.map((order: any) => order.name));
+
+        // 受け取り可の注文を取得
+        const readyForPickupResponse = await axios.get('http://localhost:8080/api/orders/situation/3');
+        setReadyForPickupOrders(readyForPickupResponse.data.map((order: any) => order.name));
+      } catch (error) {
+        console.error('データの取得に失敗しました:', error);
+        setErrorMessage('データの取得に失敗しました');
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
   return (
     <Box sx={{ padding: 4 }}>
+      {/* エラーメッセージ表示 */}
+      {errorMessage && (
+        <Typography variant="body1" color="error" gutterBottom textAlign="center">
+          {errorMessage}
+        </Typography>
+      )}
+
       {/* 3カラムのレイアウト */}
       <Grid container spacing={4}>
         {/* 左側 - 調理中 */}
