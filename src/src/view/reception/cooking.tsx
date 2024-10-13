@@ -16,7 +16,7 @@ const OrderTicketList: React.FC = () => {
   const [loadingOrderId, setLoadingOrderId] = useState<number | null>(null); // ローディング状態管理
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // APIからデータを取得
+  // 定期的にAPIからデータを取得
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -29,6 +29,9 @@ const OrderTicketList: React.FC = () => {
     };
 
     fetchOrders();
+    const interval = setInterval(fetchOrders, 5000); // 5秒ごとにデータを再取得
+
+    return () => clearInterval(interval); // コンポーネントのアンマウント時にクリーンアップ
   }, []);
 
   // situationを2に更新する関数を定義
@@ -44,9 +47,6 @@ const OrderTicketList: React.FC = () => {
           order.id === orderId ? { ...order, situation: 2 } : order
         )
       );
-
-      // 画面を更新する
-      window.location.reload();
     } catch (error) {
       const err = error as any;
       setErrorMessage('進捗の更新に失敗しました。');

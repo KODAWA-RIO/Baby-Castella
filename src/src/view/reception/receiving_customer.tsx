@@ -30,6 +30,9 @@ const OrderStatusDisplay: React.FC = () => {
     };
 
     fetchOrders();
+    const interval = setInterval(fetchOrders, 5000); // 5秒ごとにデータを再取得
+
+    return () => clearInterval(interval); // コンポーネントのアンマウント時にクリーンアップ
   }, []);
 
   return (
