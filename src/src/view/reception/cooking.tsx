@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Typography, Paper, Divider } from '@mui/material';
+import { Box, Button, Typography, Paper, Divider, CircularProgress } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; // React Routerのインポート
 import axios from 'axios';
 
 interface Order {
@@ -13,6 +14,9 @@ interface Order {
 
 const OrderTicketList: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [loadingOrderId, setLoadingOrderId] = useState<number | null>(null); // ローディング状態管理
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const navigate = useNavigate(); // useNavigateフックの使用
 
   // APIからデータを取得
   useEffect(() => {
@@ -22,34 +26,41 @@ const OrderTicketList: React.FC = () => {
         setOrders(response.data);
       } catch (error) {
         console.error('データの取得に失敗しました:', error);
+        setErrorMessage('データの取得に失敗しました');
       }
     };
 
     fetchOrders();
   }, []);
 
-  // situationを+1して更新する関数
-  const handleUpdateSituation = async (orderId: number, currentSituation: number) => {
-    console.log('Update situation triggered', orderId, currentSituation); // デバッグ用ログ
+  // situationを2に更新する関数を定義
+  const handleUpdateSituation = async (orderId: number) => {
     try {
-      // situationを+1するリクエストをバックエンドに送信
-      const response = await axios.put(`http://localhost:8080/api/orders/${orderId}`, {
-        situation: currentSituation + 1, // 現在のsituationに+1
+      await axios.put(`http://localhost:8080/api/orders/${orderId}`, {
+        situation: 2, // 常に2を代入
       });
-      
-      console.log('API response', response.data); // レスポンスのログ
-      
+  
       // 成功したら、注文リストを更新
-      setOrders(prevOrders => 
-        prevOrders.map(order => 
-          order.id === orderId ? { ...order, situation: response.data.order.situation } : order
+      setOrders(prevOrders =>
+        prevOrders.map(order =>
+          order.id === orderId ? { ...order, situation: 2 } : order
         )
       );
+      // 調理完了後に /reception/cooking に遷移
+      navigate('/reception/cooking');
     } catch (error) {
-      console.error('situationの更新に失敗しました:', error);
+      const err = error as any;
+      setErrorMessage('進捗の更新に失敗しました。');
+      if (err.response && err.response.status === 422) {
+        console.error('バリデーションエラー:', err.response.data.errors);
+        setErrorMessage('バリデーションエラーが発生しました。');
+      } else {
+        console.error('situationの更新に失敗しました:', err);
+      }
+    } finally {
+      setLoadingOrderId(null); // ローディング状態解除
     }
   };
-  
 
   return (
     <Box sx={{ padding: 4 }}>
@@ -57,6 +68,13 @@ const OrderTicketList: React.FC = () => {
       <Typography variant="h6" gutterBottom textAlign="center">
         調理中
       </Typography>
+
+      {/* エラーメッセージ表示 */}
+      {errorMessage && (
+        <Typography variant="body1" color="error" gutterBottom textAlign="center">
+          {errorMessage}
+        </Typography>
+      )}
 
       {/* 横スクロール可能なボックス */}
       <Box sx={{ overflowX: 'auto' }}>
@@ -103,12 +121,17 @@ const OrderTicketList: React.FC = () => {
               <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
 
               <Box sx={{ textAlign: 'center', marginTop: 2 }}>
-                <Button 
-                  variant="contained" 
+                <Button
+                  variant="contained"
                   color="primary"
-                  onClick={() => handleUpdateSituation(order.id, order.situation)} // ボタンが押されたらsituationを+1する
+                  onClick={() => handleUpdateSituation(order.id)}
+                  disabled={loadingOrderId === order.id} // ローディング中は無効にする
                 >
-                  調理完了
+                  {loadingOrderId === order.id ? (
+                    <CircularProgress size={24} />
+                  ) : (
+                    '調理完了'
+                  )}
                 </Button>
               </Box>
             </Paper>
