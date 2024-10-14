@@ -61,7 +61,7 @@ const Order_show: React.FC = () => {
     try {
       await axios.delete(`http://localhost:8080/api/orders/${id}`);
       alert('注文が削除されました');
-      navigate('/orders'); // 削除後に注文一覧ページに遷移
+      navigate('/order'); // 削除後に注文一覧ページに遷移
     } catch (error) {
       console.error('削除に失敗しました:', error);
       setErrorMessage('削除に失敗しました');
