@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Box, Table, TableBody, TableCell, TableContainer, TableRow, Paper } from '@mui/material';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom'; // useNavigateフックをインポート
 import axios from 'axios';
 
 interface Order {
@@ -28,9 +28,11 @@ interface Topping {
 
 const Order_show: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [order, setOrder] = useState<Order | null>(null); // 注文データ
-  const [merchandises, setMerchandises] = useState<Merchandise[]>([]); // 商品データ
-  const [toppings, setToppings] = useState<Topping[]>([]); // トッピングデータ
+  const [order, setOrder] = useState<Order | null>(null);
+  const [merchandises, setMerchandises] = useState<Merchandise[]>([]);
+  const [toppings, setToppings] = useState<Topping[]>([]);
+  const navigate = useNavigate(); // useNavigateフックの使用
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // 注文データの取得
   useEffect(() => {
@@ -43,11 +45,28 @@ const Order_show: React.FC = () => {
         setToppings(toppings);
       } catch (error) {
         console.error('注文データの取得に失敗しました:', error);
+        setErrorMessage('注文データの取得に失敗しました');
       }
     };
 
     fetchOrderData();
   }, [id]);
+
+  // 削除処理
+  const handleDelete = async () => {
+    if (!window.confirm('この注文を削除しますか？')) {
+      return; // ユーザーがキャンセルを選択した場合は何もしない
+    }
+
+    try {
+      await axios.delete(`http://localhost:8080/api/orders/${id}`);
+      alert('注文が削除されました');
+      navigate('/orders'); // 削除後に注文一覧ページに遷移
+    } catch (error) {
+      console.error('削除に失敗しました:', error);
+      setErrorMessage('削除に失敗しました');
+    }
+  };
 
   if (!order) {
     return <Box>注文データが読み込まれています...</Box>;
@@ -55,6 +74,13 @@ const Order_show: React.FC = () => {
 
   return (
     <Box sx={{ padding: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+      {/* エラーメッセージ表示 */}
+      {errorMessage && (
+        <Box sx={{ color: 'red', marginBottom: 2 }}>
+          {errorMessage}
+        </Box>
+      )}
+
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 2, width: '100%', maxWidth: 800 }}>
         <Button
           variant="contained"
@@ -65,10 +91,11 @@ const Order_show: React.FC = () => {
         >
           編集
         </Button>
-        <Button variant="contained" color="secondary" size="small">
+        <Button variant="contained" color="secondary" size="small" onClick={handleDelete}>
           削除
         </Button>
       </Box>
+
       <TableContainer component={Paper} sx={{ maxWidth: 800 }}>
         <Table>
           <TableBody>
