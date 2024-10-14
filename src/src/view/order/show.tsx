@@ -82,7 +82,7 @@ const Order_show: React.FC = () => {
       )}
 
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 2, width: '100%', maxWidth: 800 }}>
-        <Button
+        {/* <Button
           variant="contained"
           color="primary"
           component={Link}
@@ -90,7 +90,7 @@ const Order_show: React.FC = () => {
           sx={{ mr: 1 }}
         >
           編集
-        </Button>
+        </Button> */}
         <Button variant="contained" color="secondary" size="small" onClick={handleDelete}>
           削除
         </Button>
