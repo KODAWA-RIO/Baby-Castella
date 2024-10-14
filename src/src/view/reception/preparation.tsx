@@ -62,7 +62,7 @@ const OrderTicketList: React.FC = () => {
     <Box sx={{ padding: 4 }}>
       {/* 画面タイトル */}
       <Typography variant="h6" gutterBottom textAlign="center">
-        調理中
+        準備中
       </Typography>
 
       {/* エラーメッセージ表示 */}
