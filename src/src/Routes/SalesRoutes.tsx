@@ -6,8 +6,11 @@ import Sales_show from '../view/sales/show';
 const SalesRoutes: React.FC = () => {
   return (
     <Routes>
-        <Route path="/" element={<Sales_index />} />
-        <Route path="/show" element={<Sales_show />} />
+      {/* セール一覧画面 */}
+      <Route path="/" element={<Sales_index />} />
+      
+      {/* セール詳細画面（日付をパラメータとして受け取る） */}
+      <Route path="/show/:date" element={<Sales_show />} />
     </Routes>
   );
 };

@@ -1,64 +1,96 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
 interface MerchandiseSale {
-  timeSlot: string;
-  merchandiseA: number;
-  merchandiseB: number;
-  merchandiseC: number;
+  hour: number;
+  merchandise_name: string;
+  total_sales: number;
 }
 
 interface ToppingSale {
-  timeSlot: string;
-  toppingA: number;
-  toppingB: number;
-  toppingC: number;
+  hour: number;
+  topping_name: string;
+  total_sales: number;
 }
 
-const merchandiseSales: MerchandiseSale[] = [
-    { timeSlot: '9:00-10:00', merchandiseA: 3, merchandiseB: 5, merchandiseC: 2 },
-    { timeSlot: '10:00-11:00', merchandiseA: 4, merchandiseB: 3, merchandiseC: 6 },
-    { timeSlot: '11:00-12:00', merchandiseA: 2, merchandiseB: 7, merchandiseC: 4 },
-    { timeSlot: '12:00-13:00', merchandiseA: 6, merchandiseB: 4, merchandiseC: 5 },
-    { timeSlot: '13:00-14:00', merchandiseA: 5, merchandiseB: 6, merchandiseC: 3 },
-    { timeSlot: '14:00-15:00', merchandiseA: 7, merchandiseB: 3, merchandiseC: 8 },
-  ];
-  
-  const toppingSales: ToppingSale[] = [
-    { timeSlot: '9:00-10:00', toppingA: 2, toppingB: 4, toppingC: 5 },
-    { timeSlot: '10:00-11:00', toppingA: 5, toppingB: 3, toppingC: 6 },
-    { timeSlot: '11:00-12:00', toppingA: 6, toppingB: 2, toppingC: 7 },
-    { timeSlot: '12:00-13:00', toppingA: 4, toppingB: 7, toppingC: 3 },
-    { timeSlot: '13:00-14:00', toppingA: 3, toppingB: 5, toppingC: 4 },
-    { timeSlot: '14:00-15:00', toppingA: 7, toppingB: 6, toppingC: 2 },
-  ];
-  
+interface GroupedSales {
+  hour: number;
+  [key: string]: number; // 商品名やトッピング名をキーとする動的プロパティ
+}
 
 const Sales_show: React.FC = () => {
+  const { date } = useParams<{ date: string }>();
+  const [merchandiseSales, setMerchandiseSales] = useState<MerchandiseSale[]>([]);
+  const [groupedMerchandiseSales, setGroupedMerchandiseSales] = useState<GroupedSales[]>([]);
+  const [toppingSales, setToppingSales] = useState<ToppingSale[]>([]);
+  const [groupedToppingSales, setGroupedToppingSales] = useState<GroupedSales[]>([]);
+
+  // データを時間帯ごとにグループ化する関数
+  const groupSalesByHour = (sales: { hour: number; [key: string]: any }[], nameKey: string) => {
+    const grouped: { [key: number]: GroupedSales } = {};
+
+    sales.forEach((sale) => {
+      if (!grouped[sale.hour]) {
+        grouped[sale.hour] = { hour: sale.hour };
+      }
+      grouped[sale.hour][sale[nameKey]] = sale.total_sales;
+    });
+
+    return Object.values(grouped);
+  };
+
+  // 指定された日付の商品とトッピングの売り上げデータを取得
+  useEffect(() => {
+    const fetchSalesData = async () => {
+      try {
+        const merchandiseResponse = await axios.get(`http://localhost:8080/api/sales/merchandise/${date}`);
+        const merchandiseData = merchandiseResponse.data;
+        setMerchandiseSales(merchandiseData);
+        setGroupedMerchandiseSales(groupSalesByHour(merchandiseData, 'merchandise_name'));
+
+        const toppingResponse = await axios.get(`http://localhost:8080/api/sales/topping/${date}`);
+        const toppingData = toppingResponse.data;
+        setToppingSales(toppingData);
+        setGroupedToppingSales(groupSalesByHour(toppingData, 'topping_name'));
+      } catch (error) {
+        console.error('売り上げデータの取得に失敗しました:', error);
+      }
+    };
+
+    fetchSalesData();
+  }, [date]);
+
+  // 商品名リストを取得
+  const merchandiseNames = Array.from(new Set(merchandiseSales.map(sale => sale.merchandise_name)));
+  // トッピング名リストを取得
+  const toppingNames = Array.from(new Set(toppingSales.map(sale => sale.topping_name)));
+
   return (
     <Box sx={{ padding: 2 }}>
       {/* 商品売り上げテーブル */}
       <Typography variant="h5" gutterBottom>
-        商品
+        {date} の商品売り上げ
       </Typography>
       <TableContainer component={Paper} sx={{ marginBottom: 4 }}>
         <Table>
           <TableHead>
             <TableRow>
               <TableCell>時間帯</TableCell>
-              <TableCell>商品A</TableCell>
-              <TableCell>商品B</TableCell>
-              <TableCell>商品C</TableCell>
+              {merchandiseNames.map((name) => (
+                <TableCell key={name}>{name}</TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {merchandiseSales.map((sale) => (
-              <TableRow key={sale.timeSlot}>
-                <TableCell>{sale.timeSlot}</TableCell>
-                <TableCell>{sale.merchandiseA}</TableCell>
-                <TableCell>{sale.merchandiseB}</TableCell>
-                <TableCell>{sale.merchandiseC}</TableCell>
+            {groupedMerchandiseSales.map((groupedSale, index) => (
+              <TableRow key={index}>
+                <TableCell>{`${groupedSale.hour}:00 - ${groupedSale.hour + 1}:00`}</TableCell>
+                {merchandiseNames.map((name) => (
+                  <TableCell key={name}>{groupedSale[name] || 0}</TableCell>
+                ))}
               </TableRow>
             ))}
           </TableBody>
@@ -67,39 +99,39 @@ const Sales_show: React.FC = () => {
 
       {/* 商品売り上げグラフ */}
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={merchandiseSales} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+        <BarChart data={groupedMerchandiseSales} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="timeSlot" />
-          <YAxis />
+          <XAxis dataKey="hour" label={{ value: '時間帯', position: 'insideBottomRight', offset: -5 }} />
+          <YAxis label={{ value: '売上数', angle: -90, position: 'insideLeft' }} />
           <Tooltip />
           <Legend />
-          <Bar dataKey="merchandiseA" fill="#8884d8" />
-          <Bar dataKey="merchandiseB" fill="#82ca9d" />
-          <Bar dataKey="merchandiseC" fill="#ffc658" />
+          {merchandiseNames.map((name) => (
+            <Bar key={name} dataKey={name} fill="#8884d8" name={name} />
+          ))}
         </BarChart>
       </ResponsiveContainer>
 
       {/* トッピング売り上げテーブル */}
       <Typography variant="h5" gutterBottom>
-        トッピング
+        {date} のトッピング売り上げ
       </Typography>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
               <TableCell>時間帯</TableCell>
-              <TableCell>トッピングA</TableCell>
-              <TableCell>トッピングB</TableCell>
-              <TableCell>トッピングC</TableCell>
+              {toppingNames.map((name) => (
+                <TableCell key={name}>{name}</TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {toppingSales.map((sale) => (
-              <TableRow key={sale.timeSlot}>
-                <TableCell>{sale.timeSlot}</TableCell>
-                <TableCell>{sale.toppingA}</TableCell>
-                <TableCell>{sale.toppingB}</TableCell>
-                <TableCell>{sale.toppingC}</TableCell>
+            {groupedToppingSales.map((groupedSale, index) => (
+              <TableRow key={index}>
+                <TableCell>{`${groupedSale.hour}:00 - ${groupedSale.hour + 1}:00`}</TableCell>
+                {toppingNames.map((name) => (
+                  <TableCell key={name}>{groupedSale[name] || 0}</TableCell>
+                ))}
               </TableRow>
             ))}
           </TableBody>
@@ -108,15 +140,15 @@ const Sales_show: React.FC = () => {
 
       {/* トッピング売り上げグラフ */}
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={toppingSales} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+        <BarChart data={groupedToppingSales} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="timeSlot" />
-          <YAxis />
+          <XAxis dataKey="hour" label={{ value: '時間帯', position: 'insideBottomRight', offset: -5 }} />
+          <YAxis label={{ value: '売上数', angle: -90, position: 'insideLeft' }} />
           <Tooltip />
           <Legend />
-          <Bar dataKey="toppingA" fill="#8884d8" />
-          <Bar dataKey="toppingB" fill="#82ca9d" />
-          <Bar dataKey="toppingC" fill="#ffc658" />
+          {toppingNames.map((name) => (
+            <Bar key={name} dataKey={name} fill="#82ca9d" name={name} />
+          ))}
         </BarChart>
       </ResponsiveContainer>
     </Box>

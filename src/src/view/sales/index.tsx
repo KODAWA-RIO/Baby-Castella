@@ -40,8 +40,15 @@ const Sales_index: React.FC = () => {
                   <TableCell>{order.date}</TableCell>
                   <TableCell>{order.total_orders}</TableCell>
                   <TableCell>
-                    <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} component={Link} to={`/sales/show?date=${order.date}`}>
-                      詳細
+                  <Button 
+                    variant="contained" 
+                    color="primary" 
+                    size="small" 
+                    sx={{ mr: 1 }} 
+                    component={Link} 
+                    to={`/sales/show/${order.date}`}  // クエリパラメータではなくパスパラメータに修正
+                    >
+                    詳細
                     </Button>
                   </TableCell>
                 </TableRow>
