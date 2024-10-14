@@ -27,7 +27,7 @@ const NavBar: React.FC = () => {
     <AppBar position="static" sx={{ backgroundColor: '#ffffff' }}>
       <Toolbar>
         <Typography variant="h6" sx={{ flexGrow: 1, color: '#965042' }}>
-          MyApp
+          大人のベビーカステラ
         </Typography>
         <IconButton
           edge="start"
