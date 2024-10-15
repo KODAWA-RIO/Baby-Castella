@@ -68,6 +68,9 @@ const Sales_show: React.FC = () => {
   // トッピング名リストを取得
   const toppingNames = Array.from(new Set(toppingSales.map(sale => sale.topping_name)));
 
+  // 色の配列を用意
+  const colors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#413ea0', '#ffbb28'];
+
   return (
     <Box sx={{ padding: 2 }}>
       {/* 商品売り上げテーブル */}
@@ -105,8 +108,8 @@ const Sales_show: React.FC = () => {
           <YAxis label={{ value: '売上数', angle: -90, position: 'insideLeft' }} />
           <Tooltip />
           <Legend />
-          {merchandiseNames.map((name) => (
-            <Bar key={name} dataKey={name} fill="#8884d8" name={name} />
+          {merchandiseNames.map((name, index) => (
+            <Bar key={name} dataKey={name} fill={colors[index % colors.length]} name={name} />
           ))}
         </BarChart>
       </ResponsiveContainer>
@@ -146,8 +149,8 @@ const Sales_show: React.FC = () => {
           <YAxis label={{ value: '売上数', angle: -90, position: 'insideLeft' }} />
           <Tooltip />
           <Legend />
-          {toppingNames.map((name) => (
-            <Bar key={name} dataKey={name} fill="#82ca9d" name={name} />
+          {toppingNames.map((name, index) => (
+            <Bar key={name} dataKey={name} fill={colors[index % colors.length]} name={name} />
           ))}
         </BarChart>
       </ResponsiveContainer>
