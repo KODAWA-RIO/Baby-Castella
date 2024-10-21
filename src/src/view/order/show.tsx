@@ -34,11 +34,14 @@ const Order_show: React.FC = () => {
   const navigate = useNavigate(); // useNavigateフックの使用
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const url = import.meta.env.VITE_APP_URL;
+  const EndPoint = `http://${url}/api/orders/${id}`;
+
   // 注文データの取得
   useEffect(() => {
     const fetchOrderData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/orders/${id}`);
+        const response = await axios.get(EndPoint);
         const { order, merchandises, toppings } = response.data;
         setOrder(order);
         setMerchandises(merchandises);
@@ -59,7 +62,7 @@ const Order_show: React.FC = () => {
     }
 
     try {
-      await axios.delete(`http://localhost:8080/api/orders/${id}`);
+      await axios.delete(EndPoint);
       alert('注文が削除されました');
       navigate('/order'); // 削除後に注文一覧ページに遷移
     } catch (error) {

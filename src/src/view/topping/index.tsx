@@ -12,10 +12,11 @@ interface Topping {
 
 const Topping_index: React.FC = () => {
   const [toppings, setToppings] = useState<Topping[]>([]);
-
+  const url = import.meta.env.VITE_APP_URL;
+  const EndPoint1 = `http://${url}/api/toppings`;
   // トッピングデータを取得
   useEffect(() => {
-    axios.get('http://localhost:8080/api/toppings')
+    axios.get(EndPoint1)
       .then((response) => {
         setToppings(response.data);
       })
@@ -27,8 +28,10 @@ const Topping_index: React.FC = () => {
   // トッピングを削除
   const handleDelete = (id: number) => {
     // 削除リクエストを送信
+    const EndPoint2 = `http://${url}/api/toppings/${id}`;
+
     if (window.confirm('本当に削除しますか？')) {
-      axios.delete(`http://localhost:8080/api/toppings/${id}`)
+      axios.delete(EndPoint2)
         .then(() => {
           // 成功したら、削除したトッピングを一覧から除外する
           setToppings((prevToppings) => prevToppings.filter((topping) => topping.id !== id));

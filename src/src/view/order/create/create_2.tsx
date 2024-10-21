@@ -10,6 +10,7 @@ const Order_create_2: React.FC = () => {
   const [deposit, setDeposit] = useState<number | string>('');  // お預かり金額
   const [change, setChange] = useState<number>(0);  // お釣り
   const navigate = useNavigate(); // navigateフック
+  const url = import.meta.env.VITE_APP_URL;
 
   useEffect(() => {
     if (typeof deposit === 'number' && deposit >= orderData.total) {
@@ -26,9 +27,10 @@ const Order_create_2: React.FC = () => {
   };
 
   const handlePaymentComplete = async () => {
+    const EndPoint = `http://${url}/api/orders`;
     try {
       // 支払いデータをバックエンドに送信
-      const response = await axios.post('http://localhost:8080/api/orders', {
+      const response = await axios.post(EndPoint, {
         customer: orderData.name,
         total_amount: orderData.total,
         deposit_amount: deposit,

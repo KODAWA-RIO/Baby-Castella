@@ -10,6 +10,12 @@ const MerchandiseCreate: React.FC = () => {
   const [merchandise_display, setMerchandiseDisplay] = useState('1'); // デフォルトは表示に設定
   const navigate = useNavigate();
 
+  //URLを環境変数から読み込み
+  const url = import.meta.env.VITE_APP_URL;
+
+  //取得したURLとルーティングを組み合わせてエンドポイントを作成
+  const EndPoint = `http://${url}/api/merchandises/store`;
+
   const handleCreate = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -21,7 +27,8 @@ const MerchandiseCreate: React.FC = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:8080/api/merchandises/store', formData);
+      // const response = await axios.post('http://localhost:8080/api/merchandises/store', formData);
+      const response = await axios.post(EndPoint, formData);
       console.log(response.data);
 
       navigate('/merchandise'); // 登録後に商品一覧へリダイレクト

@@ -14,12 +14,15 @@ const OrderIndex: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1); // 現在のページ番号
   const [totalPages, setTotalPages] = useState(1); // 総ページ数
   const [searchTerm, setSearchTerm] = useState(''); // 検索クエリ
+  
+  const url = import.meta.env.VITE_APP_URL;
+  const EndPoint = `http://${url}/api/orders`;
 
   useEffect(() => {
     // LaravelのAPIからデータを取得
     const fetchOrders = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/orders', {
+        const response = await axios.get(EndPoint, {
           params: { page: currentPage, search: searchTerm } // ページ番号と検索クエリを送信
         });
         setOrders(response.data.data); // ページ内の注文

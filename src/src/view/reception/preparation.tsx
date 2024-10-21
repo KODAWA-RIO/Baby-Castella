@@ -16,11 +16,15 @@ const OrderTicketList: React.FC = () => {
   const [loadingOrderId, setLoadingOrderId] = useState<number | null>(null); // ローディング状態管理
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const url = import.meta.env.VITE_APP_URL;
+  const EndPoint1 = `http://${url}/api/orders/situation/2`;
+
+
   // APIからデータを取得
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/orders/situation/2'); // 調理中の注文を取得
+        const response = await axios.get(EndPoint1); // 調理中の注文を取得
         setOrders(response.data);
       } catch (error) {
         console.error('データの取得に失敗しました:', error);
@@ -37,8 +41,9 @@ const OrderTicketList: React.FC = () => {
   // situationを指定した値に更新する関数
   const handleUpdateSituation = async (orderId: number, newSituation: number) => {
     setLoadingOrderId(orderId); // ローディング状態を設定
+    const EndPoint2 = `http://${url}/api/orders/${orderId}`;
     try {
-      await axios.put(`http://localhost:8080/api/orders/${orderId}`, {
+      await axios.put(EndPoint2, {
         situation: newSituation, // newSituationの値を代入
       });
 

@@ -12,8 +12,14 @@ const MerchandiseEdit: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
+  //URLを環境変数から読み込み
+  const url = import.meta.env.VITE_APP_URL;
+  
+  //取得したURLとルーティングを組み合わせてエンドポイントを作成
+  const EndPoint = `http://${url}/api/merchandises/${id}`;
+
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/merchandises/${id}`)
+    axios.get(EndPoint)
       .then(response => {
         const merchandise = response.data;
         setMerchandiseName(merchandise.merchandise_name);
@@ -38,7 +44,7 @@ const MerchandiseEdit: React.FC = () => {
     };
 
     try {
-      await axios.put(`http://localhost:8080/api/merchandises/${id}`, updatedData);
+      await axios.put(EndPoint, updatedData);
       navigate('/merchandise');
     } catch (error) {
       console.error('Error updating merchandise:', error);

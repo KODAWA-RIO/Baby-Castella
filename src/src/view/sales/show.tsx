@@ -27,6 +27,7 @@ const Sales_show: React.FC = () => {
   const [groupedMerchandiseSales, setGroupedMerchandiseSales] = useState<GroupedSales[]>([]);
   const [toppingSales, setToppingSales] = useState<ToppingSale[]>([]);
   const [groupedToppingSales, setGroupedToppingSales] = useState<GroupedSales[]>([]);
+  const url = import.meta.env.VITE_APP_URL;
 
   // データを時間帯ごとにグループ化する関数
   const groupSalesByHour = (sales: { hour: number; [key: string]: any }[], nameKey: string) => {
@@ -43,15 +44,17 @@ const Sales_show: React.FC = () => {
   };
 
   // 指定された日付の商品とトッピングの売り上げデータを取得
+  const EndPoint1 = `http://${url}/api/sales/merchandise/${date}`
   useEffect(() => {
     const fetchSalesData = async () => {
       try {
-        const merchandiseResponse = await axios.get(`http://localhost:8080/api/sales/merchandise/${date}`);
+        const merchandiseResponse = await axios.get(EndPoint1);
         const merchandiseData = merchandiseResponse.data;
         setMerchandiseSales(merchandiseData);
         setGroupedMerchandiseSales(groupSalesByHour(merchandiseData, 'merchandise_name'));
 
-        const toppingResponse = await axios.get(`http://localhost:8080/api/sales/topping/${date}`);
+        const EndPoint2 = `http://${url}/api/sales/topping/${date}`
+        const toppingResponse = await axios.get(EndPoint2);
         const toppingData = toppingResponse.data;
         setToppingSales(toppingData);
         setGroupedToppingSales(groupSalesByHour(toppingData, 'topping_name'));

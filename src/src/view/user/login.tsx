@@ -13,10 +13,10 @@ const Login: React.FC = () => {
     event.preventDefault();
     
     // パスワードに応じて権限を分ける
-    if (password === '1111') {
+    if (password === 'susizanmai') {
       login('admin'); // 管理者としてログイン
       navigate('/order/create_1'); // ログイン成功時に共通リダイレクト
-    } else if (password === '0000') {
+    } else if (password === 'tsutiyacs3') {
       login('general'); // 一般ユーザーとしてログイン
       navigate('/order/create_1'); // ログイン成功時に共通リダイレクト
     } else {

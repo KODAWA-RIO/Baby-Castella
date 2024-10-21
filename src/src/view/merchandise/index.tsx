@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Box } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 
 interface Merchandise {
@@ -14,9 +14,16 @@ interface Merchandise {
 const Merchandise_index: React.FC = () => {
   const [merchandises, setMerchandises] = useState<Merchandise[]>([]);
 
+  //URLを環境変数から読み込み
+  const url = import.meta.env.VITE_APP_URL;
+  
+  //取得したURLとルーティングを組み合わせてエンドポイントを作成
+  const EndPoint1 = `http://${url}/api/merchandises`;
+
+
   useEffect(() => {
     // LaravelのAPIからデータを取得
-    axios.get('http://localhost:8080/api/merchandises')
+    axios.get(EndPoint1)
       .then((response) => {
         setMerchandises(response.data);
       })
@@ -27,8 +34,9 @@ const Merchandise_index: React.FC = () => {
 
   // 削除機能
   const handleDelete = (id: number) => {
+    const EndPoint2 = `http://${url}/api/merchandises/${id}`;
     if (window.confirm('本当に削除しますか？')) {
-      axios.delete(`http://localhost:8080/api/merchandises/${id}`)
+      axios.delete(EndPoint2)
         .then(() => {
           // 削除後、UI上でも削除するために状態を更新
           setMerchandises(prevMerchandises => prevMerchandises.filter(merchandise => merchandise.id !== id));

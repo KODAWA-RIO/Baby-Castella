@@ -10,10 +10,12 @@ interface Order {
 
 const Sales_index: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
+  const url = import.meta.env.VITE_APP_URL;
+  const EndPoint1 = `http://${url}/api/sales/dates`;
 
   useEffect(() => {
     // APIから日付ごとの注文データを取得
-    axios.get('http://localhost:8080/api/sales/dates')
+    axios.get(EndPoint1)
       .then(response => {
         setOrders(response.data);
       })

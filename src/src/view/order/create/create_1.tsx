@@ -24,6 +24,7 @@ const Order_create_1: React.FC = () => {
   const [selectedToppings, setSelectedToppings] = useState<Topping[]>([]);
   const [name, setName] = useState<string>('');
   const [memo, setMemo] = useState<string>('');
+  const url = import.meta.env.VITE_APP_URL;
 
   const navigate = useNavigate();
 
@@ -32,13 +33,15 @@ const Order_create_1: React.FC = () => {
     const fetchData = async () => {
       try {
         // フレーバーのデータを取得し、表示に設定されているものだけを残す
-        const flavorResponse = await axios.get('http://localhost:8080/api/merchandises');
+        const EndPoint1 = `http://${url}/api/merchandises`
+        const flavorResponse = await axios.get(EndPoint1);
         const displayedFlavors = flavorResponse.data.filter((flavor: Flavor) => flavor.merchandise_display); // 表示されるものだけ
         setFlavors(displayedFlavors);
         setQuantities(Array(displayedFlavors.length).fill(0)); // フレーバーに対応した数量配列を設定
 
         // トッピングのデータを取得し、表示に設定されているものだけを残す
-        const toppingResponse = await axios.get('http://localhost:8080/api/toppings');
+        const EndPoint2 = `http://${url}/api/toppings`
+        const toppingResponse = await axios.get(EndPoint2);
         const displayedToppings = toppingResponse.data.filter((topping: Topping) => topping.topping_display); // 表示されるものだけ
         setToppings(displayedToppings);
       } catch (error) {

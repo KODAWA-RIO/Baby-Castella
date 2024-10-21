@@ -10,9 +10,11 @@ const ToppingEdit: React.FC = () => {
   const [toppingDisplay, setToppingDisplay] = useState('1'); // デフォルトは表示
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
+  const url = import.meta.env.VITE_APP_URL;
+  const EndPoint1 = `http://${url}/api/toppings/${id}`;
 
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/toppings/${id}`)
+    axios.get(EndPoint1)
       .then(response => {
         const topping = response.data;
         setToppingName(topping.topping_name);
@@ -35,8 +37,10 @@ const ToppingEdit: React.FC = () => {
       topping_display: toppingDisplay === '1', // 表示/非表示をbooleanに変換
     };
 
+    const EndPoint2 = `http://${url}/api/toppings/${id}`;
+
     try {
-      await axios.put(`http://localhost:8080/api/toppings/${id}`, updatedData);
+      await axios.put(EndPoint2, updatedData);
       navigate('/topping');
     } catch (error) {
       setErrorMessage('トッピングの更新に失敗しました');

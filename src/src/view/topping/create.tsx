@@ -9,6 +9,7 @@ const ToppingCreate: React.FC = () => {
   const [toppingDisplay, setToppingDisplay] = useState('1'); // デフォルトは表示
   const [errorMessage, setErrorMessage] = useState(''); 
   const navigate = useNavigate();
+  const url = import.meta.env.VITE_APP_URL;
 
   const handleCreate = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -19,8 +20,10 @@ const ToppingCreate: React.FC = () => {
       topping_display: toppingDisplay === '1', // 表示/非表示の変換
     };
 
+    const EndPoint = `http://${url}/api/toppings/store`;
+
     try {
-      const response = await axios.post('http://localhost:8080/api/toppings/store', formData);
+      const response = await axios.post(EndPoint, formData);
       console.log(response.data);
 
       // 登録が成功した場合、一覧画面にリダイレクト
