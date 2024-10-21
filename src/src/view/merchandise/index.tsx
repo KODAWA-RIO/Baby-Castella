@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Box } from '@mui/material';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 interface Merchandise {

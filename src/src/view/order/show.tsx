@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Box, Table, TableBody, TableCell, TableContainer, TableRow, Paper } from '@mui/material';
-import { Link, useParams, useNavigate } from 'react-router-dom'; // useNavigateフックをインポート
+import { useParams, useNavigate } from 'react-router-dom'; // useNavigateフックをインポート
 import axios from 'axios';
 
 interface Order {

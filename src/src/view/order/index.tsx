@@ -106,7 +106,7 @@ const OrderIndex: React.FC = () => {
       <Pagination
         count={totalPages}
         page={currentPage}
-        onChange={(e, value) => handlePageChange(value)} // eventを使わない
+        onChange={(_, value) => handlePageChange(value)} // eventを使わない
         color="primary"
         sx={{ marginTop: 2 }}
       />
