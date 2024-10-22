@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box, Typography, Container, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Container,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -14,7 +24,7 @@ const MerchandiseCreate: React.FC = () => {
   const url = import.meta.env.VITE_APP_URL;
 
   //取得したURLとルーティングを組み合わせてエンドポイントを作成
-  const EndPoint = `http://${url}/api/merchandises/store`;
+  const EndPoint = `https://${url}/api/merchandises/store`;
 
   const handleCreate = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

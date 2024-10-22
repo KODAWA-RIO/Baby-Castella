@@ -7,8 +7,8 @@ const Order_create_2: React.FC = () => {
   const location = useLocation();
   const { orderData } = location.state || {};
 
-  const [deposit, setDeposit] = useState<number | string>('');  // お預かり金額
-  const [change, setChange] = useState<number>(0);  // お釣り
+  const [deposit, setDeposit] = useState<number | string>(''); // お預かり金額
+  const [change, setChange] = useState<number>(0); // お釣り
   const navigate = useNavigate(); // navigateフック
   const url = import.meta.env.VITE_APP_URL;
 
@@ -27,7 +27,7 @@ const Order_create_2: React.FC = () => {
   };
 
   const handlePaymentComplete = async () => {
-    const EndPoint = `http://${url}/api/orders`;
+    const EndPoint = `https://${url}/api/orders`;
     try {
       // 支払いデータをバックエンドに送信
       const response = await axios.post(EndPoint, {
@@ -42,7 +42,7 @@ const Order_create_2: React.FC = () => {
       });
 
       alert('支払いが完了しました！注文ID: ' + response.data.order_id);
-      
+
       // 支払い完了後に /order/create_1 にリダイレクト
       navigate('/order/create_1'); // 支払い完了後のリダイレクト先
     } catch (error) {
@@ -67,10 +67,12 @@ const Order_create_2: React.FC = () => {
               </Typography>
               <List>
                 {orderData.flavors
-                  .filter((flavor: any) => flavor.quantity > 0)  // 数量が0でない商品をフィルタリング
+                  .filter((flavor: any) => flavor.quantity > 0) // 数量が0でない商品をフィルタリング
                   .map((flavor: any, index: number) => (
                     <ListItem key={index}>
-                      <ListItemText primary={`${flavor.name}: ${flavor.quantity}個 - ${flavor.price * flavor.quantity} 円`} />
+                      <ListItemText
+                        primary={`${flavor.name}: ${flavor.quantity}個 - ${flavor.price * flavor.quantity} 円`}
+                      />
                     </ListItem>
                   ))}
               </List>
@@ -83,7 +85,11 @@ const Order_create_2: React.FC = () => {
                   <List>
                     {orderData.toppings.map((topping: any, index: number) => (
                       <ListItem key={index}>
-                        <ListItemText primary={`${topping.topping_name || topping.name}: ${topping.topping_price || topping.price} 円`} />
+                        <ListItemText
+                          primary={`${topping.topping_name || topping.name}: ${
+                            topping.topping_price || topping.price
+                          } 円`}
+                        />
                       </ListItem>
                     ))}
                   </List>

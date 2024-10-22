@@ -11,15 +11,16 @@ interface Order {
 const Sales_index: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const url = import.meta.env.VITE_APP_URL;
-  const EndPoint1 = `http://${url}/api/sales/dates`;
+  const EndPoint1 = `https://${url}/api/sales/dates`;
 
   useEffect(() => {
     // APIから日付ごとの注文データを取得
-    axios.get(EndPoint1)
-      .then(response => {
+    axios
+      .get(EndPoint1)
+      .then((response) => {
         setOrders(response.data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('データ取得エラー:', error);
       });
   }, []);
@@ -42,15 +43,15 @@ const Sales_index: React.FC = () => {
                   <TableCell>{order.date}</TableCell>
                   <TableCell>{order.total_orders}</TableCell>
                   <TableCell>
-                  <Button 
-                    variant="contained" 
-                    color="primary" 
-                    size="small" 
-                    sx={{ mr: 1 }} 
-                    component={Link} 
-                    to={`/sales/show/${order.date}`}  // クエリパラメータではなくパスパラメータに修正
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      sx={{ mr: 1 }}
+                      component={Link}
+                      to={`/sales/show/${order.date}`} // クエリパラメータではなくパスパラメータに修正
                     >
-                    詳細
+                      詳細
                     </Button>
                   </TableCell>
                 </TableRow>

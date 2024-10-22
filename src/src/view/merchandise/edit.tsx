@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Box, Typography, Container, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Container,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+} from '@mui/material';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -14,20 +24,21 @@ const MerchandiseEdit: React.FC = () => {
 
   //URLを環境変数から読み込み
   const url = import.meta.env.VITE_APP_URL;
-  
+
   //取得したURLとルーティングを組み合わせてエンドポイントを作成
-  const EndPoint = `http://${url}/api/merchandises/${id}`;
+  const EndPoint = `https://${url}/api/merchandises/${id}`;
 
   useEffect(() => {
-    axios.get(EndPoint)
-      .then(response => {
+    axios
+      .get(EndPoint)
+      .then((response) => {
         const merchandise = response.data;
         setMerchandiseName(merchandise.merchandise_name);
         setMerchandisePrice(merchandise.merchandise_price);
         setStock(merchandise.stock);
         setMerchandiseDisplay(merchandise.merchandise_display ? '1' : '0');
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error fetching merchandise:', error);
         setErrorMessage('商品データの取得に失敗しました');
       });

@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box, Typography, Container, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Container,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom'; // useNavigateをインポート
 import axios from 'axios';
 
@@ -7,7 +17,7 @@ const ToppingCreate: React.FC = () => {
   const [toppingName, setToppingName] = useState('');
   const [toppingPrice, setToppingPrice] = useState('');
   const [toppingDisplay, setToppingDisplay] = useState('1'); // デフォルトは表示
-  const [errorMessage, setErrorMessage] = useState(''); 
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
   const url = import.meta.env.VITE_APP_URL;
 
@@ -20,7 +30,7 @@ const ToppingCreate: React.FC = () => {
       topping_display: toppingDisplay === '1', // 表示/非表示の変換
     };
 
-    const EndPoint = `http://${url}/api/toppings/store`;
+    const EndPoint = `https://${url}/api/toppings/store`;
 
     try {
       const response = await axios.post(EndPoint, formData);

@@ -1,19 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Typography, Grid, Paper, IconButton, TextField, FormControl, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
+import {
+  Box,
+  Button,
+  Typography,
+  Grid,
+  Paper,
+  IconButton,
+  TextField,
+  FormControl,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+} from '@mui/material';
 import { Add, Remove } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 interface Flavor {
-  merchandise_name: string;  // 商品名
-  stock: number;             // 在庫
+  merchandise_name: string; // 商品名
+  stock: number; // 在庫
   merchandise_price: number; // 商品価格
   merchandise_display: boolean; // 商品の表示/非表示
 }
 
 interface Topping {
-  topping_name: string;   // トッピング名
-  topping_price: number;  // トッピング価格
+  topping_name: string; // トッピング名
+  topping_price: number; // トッピング価格
   topping_display: boolean; // トッピングの表示/非表示
 }
 
@@ -33,14 +45,14 @@ const Order_create_1: React.FC = () => {
     const fetchData = async () => {
       try {
         // フレーバーのデータを取得し、表示に設定されているものだけを残す
-        const EndPoint1 = `http://${url}/api/merchandises`
+        const EndPoint1 = `https://${url}/api/merchandises`;
         const flavorResponse = await axios.get(EndPoint1);
         const displayedFlavors = flavorResponse.data.filter((flavor: Flavor) => flavor.merchandise_display); // 表示されるものだけ
         setFlavors(displayedFlavors);
         setQuantities(Array(displayedFlavors.length).fill(0)); // フレーバーに対応した数量配列を設定
 
         // トッピングのデータを取得し、表示に設定されているものだけを残す
-        const EndPoint2 = `http://${url}/api/toppings`
+        const EndPoint2 = `https://${url}/api/toppings`;
         const toppingResponse = await axios.get(EndPoint2);
         const displayedToppings = toppingResponse.data.filter((topping: Topping) => topping.topping_display); // 表示されるものだけ
         setToppings(displayedToppings);
@@ -53,10 +65,7 @@ const Order_create_1: React.FC = () => {
   }, []);
 
   const calculateTotal = () => {
-    const flavorTotal = flavors.reduce(
-      (sum, flavor, index) => sum + flavor.merchandise_price * quantities[index],
-      0
-    );
+    const flavorTotal = flavors.reduce((sum, flavor, index) => sum + flavor.merchandise_price * quantities[index], 0);
     const toppingTotal = selectedToppings.reduce((sum, topping) => sum + topping.topping_price, 0);
 
     return flavorTotal + toppingTotal;
@@ -87,11 +96,11 @@ const Order_create_1: React.FC = () => {
   };
 
   const handleToppingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const topping = toppings.find(t => t.topping_name === event.target.name);
+    const topping = toppings.find((t) => t.topping_name === event.target.name);
     if (event.target.checked && topping) {
       setSelectedToppings([...selectedToppings, topping]);
     } else {
-      setSelectedToppings(selectedToppings.filter(t => t.topping_name !== event.target.name));
+      setSelectedToppings(selectedToppings.filter((t) => t.topping_name !== event.target.name));
     }
   };
 
@@ -102,7 +111,7 @@ const Order_create_1: React.FC = () => {
         quantity: quantities[index],
         price: flavor.merchandise_price,
       })),
-      toppings: selectedToppings,  // トッピングのデータを渡す
+      toppings: selectedToppings, // トッピングのデータを渡す
       name,
       memo,
       total: calculateTotal(),
@@ -115,8 +124,7 @@ const Order_create_1: React.FC = () => {
   return (
     <Box sx={{ padding: 4 }}>
       <Typography variant="h6" gutterBottom>
-        最大6個
-        合計金額: {calculateTotal()} 円
+        最大6個 合計金額: {calculateTotal()} 円
       </Typography>
       <Grid container spacing={2} justifyContent="center">
         {flavors.map((flavor, index) => (
@@ -138,7 +146,10 @@ const Order_create_1: React.FC = () => {
                 <Typography variant="h5" sx={{ margin: '0 16px' }}>
                   {quantities[index]}
                 </Typography>
-                <IconButton onClick={() => handleIncrement(index)} disabled={quantities.reduce((sum, val) => sum + val, 0) >= 6 || flavor.stock === 0}>
+                <IconButton
+                  onClick={() => handleIncrement(index)}
+                  disabled={quantities.reduce((sum, val) => sum + val, 0) >= 6 || flavor.stock === 0}
+                >
                   <Add />
                 </IconButton>
               </Box>
@@ -150,9 +161,15 @@ const Order_create_1: React.FC = () => {
       <Box sx={{ mt: 4, textAlign: 'center' }}>
         <FormControl component="fieldset">
           <FormGroup row sx={{ justifyContent: 'center' }}>
-            {toppings.map(topping => (
+            {toppings.map((topping) => (
               <FormControlLabel
-                control={<Checkbox checked={selectedToppings.some(t => t.topping_name === topping.topping_name)} onChange={handleToppingChange} name={topping.topping_name} />}
+                control={
+                  <Checkbox
+                    checked={selectedToppings.some((t) => t.topping_name === topping.topping_name)}
+                    onChange={handleToppingChange}
+                    name={topping.topping_name}
+                  />
+                }
                 label={`${topping.topping_name} (${topping.topping_price} 円)`}
                 key={topping.topping_name}
               />

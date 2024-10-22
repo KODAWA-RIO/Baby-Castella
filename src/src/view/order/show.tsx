@@ -35,7 +35,7 @@ const Order_show: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const url = import.meta.env.VITE_APP_URL;
-  const EndPoint = `http://${url}/api/orders/${id}`;
+  const EndPoint = `https://${url}/api/orders/${id}`;
 
   // 注文データの取得
   useEffect(() => {
@@ -78,11 +78,7 @@ const Order_show: React.FC = () => {
   return (
     <Box sx={{ padding: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
       {/* エラーメッセージ表示 */}
-      {errorMessage && (
-        <Box sx={{ color: 'red', marginBottom: 2 }}>
-          {errorMessage}
-        </Box>
-      )}
+      {errorMessage && <Box sx={{ color: 'red', marginBottom: 2 }}>{errorMessage}</Box>}
 
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 2, width: '100%', maxWidth: 800 }}>
         {/* <Button
@@ -122,7 +118,8 @@ const Order_show: React.FC = () => {
               <TableCell>
                 {merchandises.map((merchandise) => (
                   <Box key={merchandise.id}>
-                    {merchandise.merchandise_name} × {merchandise.pieces} - {merchandise.merchandise_price * merchandise.pieces} 円
+                    {merchandise.merchandise_name} × {merchandise.pieces} -{' '}
+                    {merchandise.merchandise_price * merchandise.pieces} 円
                   </Box>
                 ))}
               </TableCell>

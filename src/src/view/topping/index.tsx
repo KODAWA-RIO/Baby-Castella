@@ -13,10 +13,11 @@ interface Topping {
 const Topping_index: React.FC = () => {
   const [toppings, setToppings] = useState<Topping[]>([]);
   const url = import.meta.env.VITE_APP_URL;
-  const EndPoint1 = `http://${url}/api/toppings`;
+  const EndPoint1 = `https://${url}/api/toppings`;
   // トッピングデータを取得
   useEffect(() => {
-    axios.get(EndPoint1)
+    axios
+      .get(EndPoint1)
       .then((response) => {
         setToppings(response.data);
       })
@@ -28,10 +29,11 @@ const Topping_index: React.FC = () => {
   // トッピングを削除
   const handleDelete = (id: number) => {
     // 削除リクエストを送信
-    const EndPoint2 = `http://${url}/api/toppings/${id}`;
+    const EndPoint2 = `https://${url}/api/toppings/${id}`;
 
     if (window.confirm('本当に削除しますか？')) {
-      axios.delete(EndPoint2)
+      axios
+        .delete(EndPoint2)
         .then(() => {
           // 成功したら、削除したトッピングを一覧から除外する
           setToppings((prevToppings) => prevToppings.filter((topping) => topping.id !== id));
@@ -64,22 +66,17 @@ const Topping_index: React.FC = () => {
                   <TableCell>{topping.topping_price}</TableCell>
                   <TableCell>{topping.topping_display ? '表示' : '非表示'}</TableCell> {/* 新しく追加 */}
                   <TableCell>
-                    <Button 
-                      variant="contained" 
-                      color="primary" 
-                      size="small" 
-                      sx={{ mr: 1 }} 
-                      component={Link} 
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      sx={{ mr: 1 }}
+                      component={Link}
                       to={`/topping/edit/${topping.id}`}
                     >
                       編集
                     </Button>
-                    <Button 
-                      variant="contained" 
-                      color="secondary" 
-                      size="small" 
-                      onClick={() => handleDelete(topping.id)}
-                    >
+                    <Button variant="contained" color="secondary" size="small" onClick={() => handleDelete(topping.id)}>
                       削除
                     </Button>
                   </TableCell>
@@ -90,12 +87,7 @@ const Topping_index: React.FC = () => {
         </TableContainer>
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 2 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          component={Link}
-          to="/topping/create"
-        >
+        <Button variant="contained" color="primary" component={Link} to="/topping/create">
           登録
         </Button>
       </Box>

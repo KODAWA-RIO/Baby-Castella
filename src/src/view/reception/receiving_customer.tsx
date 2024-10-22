@@ -15,17 +15,17 @@ const OrderStatusDisplay: React.FC = () => {
     const fetchOrders = async () => {
       try {
         // 調理中の注文を取得
-        const EndPoint1 = `http://${url}/api/orders/situation/1`;
+        const EndPoint1 = `https://${url}/api/orders/situation/1`;
         const cookingResponse = await axios.get(EndPoint1);
         setCookingOrders(cookingResponse.data.map((order: any) => order.name));
 
         // 準備中の注文を取得
-        const EndPoint2 = `http://${url}/api/orders/situation/2`;
+        const EndPoint2 = `https://${url}/api/orders/situation/2`;
         const preparationResponse = await axios.get(EndPoint2);
         setPreparationOrders(preparationResponse.data.map((order: any) => order.name));
 
         // 受け取り可の注文を取得
-        const EndPoint3 = `http://${url}/api/orders/situation/3`
+        const EndPoint3 = `https://${url}/api/orders/situation/3`;
         const readyForPickupResponse = await axios.get(EndPoint3);
         setReadyForPickupOrders(readyForPickupResponse.data.map((order: any) => order.name));
       } catch (error) {

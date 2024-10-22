@@ -5,7 +5,7 @@ import axios from 'axios';
 interface Order {
   id: number;
   name: string;
-  items: { flavor: string, quantity: number }[];
+  items: { flavor: string; quantity: number }[];
   toppings: string[];
   memo: string;
   situation: number; // situationの状態を追跡
@@ -17,8 +17,7 @@ const OrderTicketList: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const url = import.meta.env.VITE_APP_URL;
-  const EndPoint1 = `http://${url}/api/orders/situation/2`;
-
+  const EndPoint1 = `https://${url}/api/orders/situation/2`;
 
   // APIからデータを取得
   useEffect(() => {
@@ -41,7 +40,7 @@ const OrderTicketList: React.FC = () => {
   // situationを指定した値に更新する関数
   const handleUpdateSituation = async (orderId: number, newSituation: number) => {
     setLoadingOrderId(orderId); // ローディング状態を設定
-    const EndPoint2 = `http://${url}/api/orders/${orderId}`;
+    const EndPoint2 = `https://${url}/api/orders/${orderId}`;
     try {
       await axios.put(EndPoint2, {
         situation: newSituation, // newSituationの値を代入
@@ -130,11 +129,7 @@ const OrderTicketList: React.FC = () => {
                   onClick={() => handleUpdateSituation(order.id, 1)}
                   disabled={loadingOrderId === order.id} // ローディング中は無効にする
                 >
-                  {loadingOrderId === order.id ? (
-                    <CircularProgress size={24} />
-                  ) : (
-                    '調理に戻る'
-                  )}
+                  {loadingOrderId === order.id ? <CircularProgress size={24} /> : '調理に戻る'}
                 </Button>
 
                 {/* 準備完了ボタン: situationを3に更新 */}
@@ -144,11 +139,7 @@ const OrderTicketList: React.FC = () => {
                   onClick={() => handleUpdateSituation(order.id, 3)}
                   disabled={loadingOrderId === order.id} // ローディング中は無効にする
                 >
-                  {loadingOrderId === order.id ? (
-                    <CircularProgress size={24} />
-                  ) : (
-                    '準備完了'
-                  )}
+                  {loadingOrderId === order.id ? <CircularProgress size={24} /> : '準備完了'}
                 </Button>
               </Box>
             </Paper>

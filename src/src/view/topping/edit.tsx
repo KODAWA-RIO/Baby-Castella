@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Box, Typography, Container, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Container,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from '@mui/material';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -11,11 +21,12 @@ const ToppingEdit: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
   const url = import.meta.env.VITE_APP_URL;
-  const EndPoint1 = `http://${url}/api/toppings/${id}`;
+  const EndPoint1 = `https://${url}/api/toppings/${id}`;
 
   useEffect(() => {
-    axios.get(EndPoint1)
-      .then(response => {
+    axios
+      .get(EndPoint1)
+      .then((response) => {
         const topping = response.data;
         setToppingName(topping.topping_name);
         setToppingPrice(topping.topping_price);
@@ -26,7 +37,6 @@ const ToppingEdit: React.FC = () => {
         setErrorMessage('トッピングデータの取得に失敗しました');
       });
   }, [id]);
-  
 
   const handleUpdate = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -37,7 +47,7 @@ const ToppingEdit: React.FC = () => {
       topping_display: toppingDisplay === '1', // 表示/非表示をbooleanに変換
     };
 
-    const EndPoint2 = `http://${url}/api/toppings/${id}`;
+    const EndPoint2 = `https://${url}/api/toppings/${id}`;
 
     try {
       await axios.put(EndPoint2, updatedData);

@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Typography,
+} from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -44,7 +54,7 @@ const Sales_show: React.FC = () => {
   };
 
   // 指定された日付の商品とトッピングの売り上げデータを取得
-  const EndPoint1 = `http://${url}/api/sales/merchandise/${date}`
+  const EndPoint1 = `https://${url}/api/sales/merchandise/${date}`;
   useEffect(() => {
     const fetchSalesData = async () => {
       try {
@@ -53,7 +63,7 @@ const Sales_show: React.FC = () => {
         setMerchandiseSales(merchandiseData);
         setGroupedMerchandiseSales(groupSalesByHour(merchandiseData, 'merchandise_name'));
 
-        const EndPoint2 = `http://${url}/api/sales/topping/${date}`
+        const EndPoint2 = `https://${url}/api/sales/topping/${date}`;
         const toppingResponse = await axios.get(EndPoint2);
         const toppingData = toppingResponse.data;
         setToppingSales(toppingData);
@@ -67,9 +77,9 @@ const Sales_show: React.FC = () => {
   }, [date]);
 
   // 商品名リストを取得
-  const merchandiseNames = Array.from(new Set(merchandiseSales.map(sale => sale.merchandise_name)));
+  const merchandiseNames = Array.from(new Set(merchandiseSales.map((sale) => sale.merchandise_name)));
   // トッピング名リストを取得
-  const toppingNames = Array.from(new Set(toppingSales.map(sale => sale.topping_name)));
+  const toppingNames = Array.from(new Set(toppingSales.map((sale) => sale.topping_name)));
 
   // 色の配列を用意
   const colors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#413ea0', '#ffbb28'];

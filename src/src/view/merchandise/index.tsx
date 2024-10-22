@@ -16,14 +16,14 @@ const Merchandise_index: React.FC = () => {
 
   //URLを環境変数から読み込み
   const url = import.meta.env.VITE_APP_URL;
-  
-  //取得したURLとルーティングを組み合わせてエンドポイントを作成
-  const EndPoint1 = `http://${url}/api/merchandises`;
 
+  //取得したURLとルーティングを組み合わせてエンドポイントを作成
+  const EndPoint1 = `https://${url}/api/merchandises`;
 
   useEffect(() => {
     // LaravelのAPIからデータを取得
-    axios.get(EndPoint1)
+    axios
+      .get(EndPoint1)
       .then((response) => {
         setMerchandises(response.data);
       })
@@ -34,12 +34,13 @@ const Merchandise_index: React.FC = () => {
 
   // 削除機能
   const handleDelete = (id: number) => {
-    const EndPoint2 = `http://${url}/api/merchandises/${id}`;
+    const EndPoint2 = `https://${url}/api/merchandises/${id}`;
     if (window.confirm('本当に削除しますか？')) {
-      axios.delete(EndPoint2)
+      axios
+        .delete(EndPoint2)
         .then(() => {
           // 削除後、UI上でも削除するために状態を更新
-          setMerchandises(prevMerchandises => prevMerchandises.filter(merchandise => merchandise.id !== id));
+          setMerchandises((prevMerchandises) => prevMerchandises.filter((merchandise) => merchandise.id !== id));
         })
         .catch((error) => {
           console.error('削除エラー:', error);
@@ -71,7 +72,14 @@ const Merchandise_index: React.FC = () => {
                   <TableCell>{merchandise.stock}</TableCell>
                   <TableCell>{merchandise.merchandise_display ? '表示' : '非表示'}</TableCell> {/* 新しく追加 */}
                   <TableCell>
-                    <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} component={Link} to={`/merchandise/edit/${merchandise.id}`}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      sx={{ mr: 1 }}
+                      component={Link}
+                      to={`/merchandise/edit/${merchandise.id}`}
+                    >
                       編集
                     </Button>
                     <Button
@@ -90,12 +98,7 @@ const Merchandise_index: React.FC = () => {
         </TableContainer>
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 2 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          component={Link}
-          to="/merchandise/create"
-        >
+        <Button variant="contained" color="primary" component={Link} to="/merchandise/create">
           登録
         </Button>
       </Box>

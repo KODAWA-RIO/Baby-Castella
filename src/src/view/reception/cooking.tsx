@@ -5,7 +5,7 @@ import axios from 'axios';
 interface Order {
   id: number;
   name: string;
-  items: { flavor: string, quantity: number }[];
+  items: { flavor: string; quantity: number }[];
   toppings: string[];
   memo: string;
   situation: number; // situationの状態を追跡
@@ -17,7 +17,7 @@ const OrderTicketList: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const url = import.meta.env.VITE_APP_URL;
-  const EndPoint = `http://${url}/api/orders/situation/1`;
+  const EndPoint = `https://${url}/api/orders/situation/1`;
 
   // 定期的にAPIからデータを取得
   useEffect(() => {
@@ -39,18 +39,14 @@ const OrderTicketList: React.FC = () => {
 
   // situationを2に更新する関数を定義
   const handleUpdateSituation = async (orderId: number) => {
-    const EndPoint2 = `http://${url}/api/orders/${orderId}`;
+    const EndPoint2 = `https://${url}/api/orders/${orderId}`;
     try {
       await axios.put(EndPoint2, {
         situation: 2, // 常に2を代入
       });
-  
+
       // 成功したら、注文リストを更新してページをリロード
-      setOrders(prevOrders =>
-        prevOrders.map(order =>
-          order.id === orderId ? { ...order, situation: 2 } : order
-        )
-      );
+      setOrders((prevOrders) => prevOrders.map((order) => (order.id === orderId ? { ...order, situation: 2 } : order)));
     } catch (error) {
       const err = error as any;
       setErrorMessage('進捗の更新に失敗しました。');
@@ -130,11 +126,7 @@ const OrderTicketList: React.FC = () => {
                   onClick={() => handleUpdateSituation(order.id)}
                   disabled={loadingOrderId === order.id} // ローディング中は無効にする
                 >
-                  {loadingOrderId === order.id ? (
-                    <CircularProgress size={24} />
-                  ) : (
-                    '調理完了'
-                  )}
+                  {loadingOrderId === order.id ? <CircularProgress size={24} /> : '調理完了'}
                 </Button>
               </Box>
             </Paper>
