@@ -24,7 +24,7 @@ const MerchandiseCreate: React.FC = () => {
   const url = import.meta.env.VITE_APP_URL;
 
   //取得したURLとルーティングを組み合わせてエンドポイントを作成
-  const EndPoint = `http://${url}/api/merchandises/store`;
+  const EndPoint = `https://${url}/api/merchandises/store`;
 
   const handleCreate = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

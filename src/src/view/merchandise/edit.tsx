@@ -26,7 +26,7 @@ const MerchandiseEdit: React.FC = () => {
   const url = import.meta.env.VITE_APP_URL;
 
   //取得したURLとルーティングを組み合わせてエンドポイントを作成
-  const EndPoint = `http://${url}/api/merchandises/${id}`;
+  const EndPoint = `https://${url}/api/merchandises/${id}`;
 
   useEffect(() => {
     axios

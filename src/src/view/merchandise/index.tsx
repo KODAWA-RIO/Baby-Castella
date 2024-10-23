@@ -18,7 +18,7 @@ const Merchandise_index: React.FC = () => {
   const url = import.meta.env.VITE_APP_URL;
 
   //取得したURLとルーティングを組み合わせてエンドポイントを作成
-  const EndPoint1 = `http://${url}/api/merchandises`;
+  const EndPoint1 = `https://${url}/api/merchandises`;
 
   useEffect(() => {
     // LaravelのAPIからデータを取得
@@ -34,7 +34,7 @@ const Merchandise_index: React.FC = () => {
 
   // 削除機能
   const handleDelete = (id: number) => {
-    const EndPoint2 = `http://${url}/api/merchandises/${id}`;
+    const EndPoint2 = `https://${url}/api/merchandises/${id}`;
     if (window.confirm('本当に削除しますか？')) {
       axios
         .delete(EndPoint2)
